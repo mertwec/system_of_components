@@ -1,15 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    {% if title %}
-        <title>{{title}}. System of components</title>
-    {% else %}
-        <title>System of components</title>
-    {% endif %}
-</head>
-<body>
-    <h1>@{{bd.company}}</h1>
-    <h2>Hello {{bd.user}}</h2>
-</body>
-</html>
+{% extends 'base.html'%}
+
+{% block content%}
+    <p>main page</p>
+{% endblock %}

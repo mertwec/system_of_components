@@ -1,0 +1,9 @@
+{% extends 'base.html'%}
+
+{% block content%}
+    <ul>
+        {% for cat in all_categories %}
+            <li>{{cat.name|title}} ({{cat.refdes}})</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if title %}
+        <title>{{title}}. System of components</title>
+    {% else %}
+        <title>System of components</title>
+    {% endif %}
+</head>
+
+    <header>
+        {% include "navigation.html" %}
+        <hr>
+    </header>
+
+    <body>
+        <h3>Hello {{bd.user}}</h3>
+
+        {% block content %}  {% endblock %}
+    </body>
+
+    <footer>
+        <hr>
+        <p>company: {{bd.company}}</p>
+        <div>our contacts: __-____-____</div>
+	</footer>
+</html>
