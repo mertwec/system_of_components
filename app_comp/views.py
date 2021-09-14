@@ -16,3 +16,8 @@ def categories():
                            title='Categories',
                            all_categories=all_cat,
                            bd=temp_bd)
+
+
+@app.route("/add_component", methods=['get', 'post'])
+def create_component():
+    pass
