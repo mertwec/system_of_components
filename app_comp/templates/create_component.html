@@ -1,8 +1,17 @@
-{% extend "base.html"%}
+{% extends "base.html"%}
 
 {% block content %}
-<form>
+<form action ="" method="POST" novalidate>
+	{{ form.csrf_token() }}
+	<h2>Pattern</h2>
 
+	<p>{{ form.name.label() }} {{ form.name(size=32)}}
+		{% for error in form.errors %}
+			{{errors}}
+		{% endfor %}
+	</p>
+
+	<p>{{ form.submit() }}</p>
 
 </form>
 {% endblock %}
