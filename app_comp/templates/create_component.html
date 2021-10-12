@@ -1,11 +1,21 @@
 {% extends "base.html"%}
 
 {% block content %}
-<form action ="" method="POST" novalidate>
+<form action ="" method="POST">
 	{{ form.csrf_token() }}
 	<h2>Pattern</h2>
 
-	<p>{{ form.name.label() }} {{ form.name(size=32)}}
+	{% with messages = get_flashed_messages(with_categories=true) %}
+  		{% if messages %}
+		    <ul class=flashes>
+		    {% for category, message in messages %}
+		      <li class="{{ category }}">{{ category }}: {{ message }}</li>
+		    {% endfor %}
+		    </ul>
+		{% endif %}
+	{% endwith %}
+
+	<p>{{ form.name.label() }} {{ form.name(size=25)}}
 		{% for error in form.errors %}
 			{{errors}}
 		{% endfor %}
