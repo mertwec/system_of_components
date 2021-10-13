@@ -1,17 +1,14 @@
 {% extends "base.html"%}
 
 {% block content %}
-<form action ="" method="POST" novalidate>
-	{{ form.csrf_token() }}
-	<h2>Pattern</h2>
 
-	<p>{{ form.name.label() }} {{ form.name(size=32)}}
-		{% for error in form.errors %}
-			{{errors}}
-		{% endfor %}
-	</p>
+<form name="component" action ="" method="POST" novalidate>
+	{{ form.csrf_token() }}
+	<h3>Create Component</h3>
 
 	<p>{{ form.submit() }}</p>
-
 </form>
+
+<p>If pattern is not exist: <a href="{{ url_for('create_pattern_component') }}"> add pattern </a> </p>
+
 {% endblock %}

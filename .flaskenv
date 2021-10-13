@@ -1,0 +1,3 @@
+FLASK_APP=app_comp
+FLASK_ENV=development
+FLASK_RUN_PORT=5050
