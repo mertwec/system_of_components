@@ -19,8 +19,8 @@ def categories():
                            bd=temp_bd)
 
 
-@app.route("/creation", methods=['get', 'post'])
-def create_component():
+@app.route("/creation/pattern", methods=['get', 'post'])
+def create_pattern_component():
     form = PatternAddForm()
     if form.validate_on_submit():
         name = form.name.data
@@ -37,3 +37,11 @@ def create_component():
     return render_template('create_component.html', title='creation', form=form, bd=temp_bd)
 
 
+@app.route('/creation', methods=['get', 'post'])
+def create_component():
+    form = ComponentAddForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        # TODO db logic
+        return redirect(url_for('create_component'))
+    return render_template('create_component.html', title='creation', form=form, bd=temp_bd)
