@@ -1,15 +1,14 @@
 {% extends "base.html"%}
 
 {% block content %}
-<form name="pattern" action ="" method="POST" novalidate>
+<form name="pattern" action ="" method="POST">
 	{{ form.csrf_token() }}
 	<h3>Create Pattern</h3>
-
+	<p>{{get_flashed_messages()}}</p>
 	<p>{{ form.name.label() }} {{ form.name(size=32)}}
 		{% for error in form.errors %}
 			{{errors}}
-		{% endfor %}
-	</p>
+		{% endfor %}</p>
 	<p>{{ form.submit() }}</p>
 </form>
 

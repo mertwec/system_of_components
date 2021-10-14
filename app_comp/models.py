@@ -2,7 +2,7 @@ from app_comp import db
 
 
 temp_bd = {'company': 'TorsionPLUS',
-           "user": "Walentin",
+           "user": "Master",
            }
 
 
