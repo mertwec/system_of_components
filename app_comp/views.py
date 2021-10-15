@@ -36,14 +36,14 @@ def create_pattern_component():
         name = form.name.data
         db_names = db.session.query(Pattern.name).all()
         print(type(name), db_names)
-        if (name,) in db_names:
+        if (name.upper(),) in db_names:
             print('exists')
-            flash(f'Pattern "{name}" already exists', 'warning')
+            flash(f'Pattern "{name}" already exists', 'Warning')
         else:
             # db.session.add(Pattern(name=name))
             # db.session.commit()
             print(f'pattern add "{name}"')
-            flash(f'Pattern "{name}" is created', 'success')
+            flash(f'Pattern "{name}" is created', 'Success')
             print('pattern valid')
         return redirect(url_for('create_pattern_component'))
 
