@@ -9,7 +9,7 @@ def find_file(type_file="csv"):
     return list of all files
     """
     
-    lfile_=[File for File in os.listdir(r'') if File.endswith(f'.{type_file}')]
+    lfile_ = [File for File in os.listdir(r'') if File.endswith(f'.{type_file}')]
     # D={k:v for(k,v) in zip(range(1,(len(lfile)+1)),lfile)} # файлы с заданными ключами
     return lfile_
 

@@ -1,10 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DecimalField, TextAreaField, SelectField
 from wtforms.validators import DataRequired
+from app_comp import db
+from app_comp.models import Category, Pattern, Component
+import app_comp.tools.database_tools as dbt
 
-
-existing_patterns = []
-existing_categories = []
+existing_patterns = [p.name for p in dbt.read_from_table(db, Pattern)]
+existing_categories = [c.name for c in dbt.read_from_table(db, Category)]
 
 
 class ComponentAddForm(FlaskForm):
