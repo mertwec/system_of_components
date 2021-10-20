@@ -1,9 +1,11 @@
 {% extends "base.html"%}
 
 {% block content %}
+
+<h3>Create Pattern</h3>
 <form name="pattern" action ="" method="POST">
 	{{ form.csrf_token() }}
-	<h3>Create Pattern</h3>
+
 
 	{% with messages = get_flashed_messages(with_categories=true) %}
   		{% if messages %}
@@ -17,7 +19,7 @@
 
 	<p>{{ form.name.label() }} {{ form.name(size=32)}}
 		{% for error in form.errors %}
-			{{errors}}
+			<div class="error">{{ error }} </div>
 		{% endfor %}</p>
 	<p>{{ form.submit() }}</p>
 </form>

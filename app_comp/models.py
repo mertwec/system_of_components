@@ -35,9 +35,9 @@ class Component(db.Model):
     __tablename__ = 'components'
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.String(128), unique=True, index=True, nullable=False)
-    tolerance = db.Column(db.Float, default=None)   # %
+    tolerance = db.Column(db.Integer, default=None)   # %
     voltage = db.Column(db.String(10))  # V
-    unit = db.Column(db.String(25), default=None)                 # C(n,mk,p); R(k, M); L ()
+    power = db.Column(db.Float, default=None)
     count = db.Column(db.Integer, default=0)    
     comment = db.Column(db.Text)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DecimalField, TextAreaField, SelectField
+from wtforms import StringField, SubmitField, TextAreaField, SelectField, IntegerField, DecimalField
 from wtforms.validators import DataRequired
 from app_comp import db
 from app_comp.models import Category, Pattern, Component
@@ -11,12 +11,14 @@ existing_categories = [c.name for c in dbt.read_from_table(db, Category)]
 
 class ComponentAddForm(FlaskForm):
     value = StringField("Value:", validators=[DataRequired()])
-    count = DecimalField("Count:", default=0, validators=[DataRequired()])
-    unit = StringField("Unit:")
-    tolerance = DecimalField("Tol:")
+    tolerance = IntegerField("Tol, %:")
+    voltage = StringField("Voltage,V:", default=None)
+    power = DecimalField('Power, Wt:', default=0.0)
+    count = IntegerField("Count:", default=0)
+    comment = TextAreaField("Comment:")
     pattern = SelectField("Pattern:", choices=existing_patterns, validators=[DataRequired()])
     category = SelectField("Category:", choices=existing_categories, validators=[DataRequired()])
-    comment = TextAreaField("Comment:")
+
     submit = SubmitField('Create component')
 
 

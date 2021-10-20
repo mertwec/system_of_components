@@ -2,11 +2,38 @@
 
 {% block content %}
 
+<h3>Create Component</h3>
 <form name="component" action ="" method="POST" novalidate>
-	{{ form.csrf_token() }}
-	<h3>Create Component</h3>
+	<div>{{ form_c.csrf_token() }}</div>
 
-	<p>{{ form.submit() }}</p>
+	{% with messages = get_flashed_messages(with_categories=true) %}
+  		{% if messages %}
+		    <ul class=flashes>
+		    {% for category, message in messages %}
+		      <li class="{{ category }}">{{ category }}: {{ message }}</li>
+		    {% endfor %}
+		    </ul>
+		{% endif %}
+	{% endwith %}
+
+
+	<table border="0px" cols="3" cellspacing="0">
+		{% for field in form_c if field.name != 'csrf_token' %}
+		<tr>
+			{% if field.label() == "Create component" %}
+				<td>{{ form_c.submit() }}</td>
+			{%else%}
+			<td>{{ field.label() }}</td>
+			<td>{{ field() }} </td>
+			<td>
+				{% for error in field.errors %}
+					<div class="error">{{ error }} </div>
+				{%endfor%}
+			</td>
+			{%endif%}
+		</tr>
+		{%endfor%}
+	</table>
 </form>
 
 <p>If pattern is not exist: <a href="{{ url_for('create_pattern_component') }}"> add pattern </a> </p>
