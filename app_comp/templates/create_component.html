@@ -17,11 +17,12 @@
 	{% endwith %}
 
 
-	<table border="0px" cols="3" cellspacing="0">
+	<table border="0px" cols="3" cellpadding="5">
+
 		{% for field in form_c if field.name != 'csrf_token' %}
 		<tr>
-			{% if field.label() == "Create component" %}
-				<td>{{ form_c.submit() }}</td>
+			{% if field.name == "submit" %}
+				<td colspan="2" height="10" align="right">{{ form_c.submit() }}</td>
 			{%else%}
 			<td>{{ field.label() }}</td>
 			<td>{{ field() }} </td>
