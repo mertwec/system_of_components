@@ -1,9 +1,11 @@
 {% extends 'base.html'%}
-
 {% block content%}
-    <ul>
-        {% for cat in all_categories %}
-            <li>{{cat.name|title}} ({{cat.refdes}})</li>
-        {% endfor %}
-    </ul>
+<div> Бог Машина </div>
+<table>
+    <td>{% include "categories_part/category_menu.html" %}</td>
+    <td>{% include "categories_part/category_content.html" %}</td>
+</table>
 {% endblock %}
+
+
+

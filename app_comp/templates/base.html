@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    {% if title %}
-        <title>{{title}}. System of components</title>
-    {% else %}
-        <title>System of components</title>
-    {% endif %}
-</head>
+    <head>
+        <meta charset="UTF-8">
+        {% if title %}
+            <title>{{title}}. System of components</title>
+        {% else %}
+            <title>System of components</title>
+        {% endif %}
+        <link rel="shortcut icon" href="/static/images/favicon.png" type="image/png">
+    </head>
 
     <header>
         {% include "navigation.html" %}
         <hr>
     </header>
 
+
     <body>
         <h2>Hello {{bd.user}}</h2>
+        {% block content %}
 
-        {% block content %}  {% endblock %}
+        {% endblock %}
     </body>
 
     <footer>

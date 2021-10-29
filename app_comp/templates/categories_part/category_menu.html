@@ -1,0 +1,5 @@
+<ul>
+    {% for cat in all_categories %}
+        <li>{{cat.name|title}} ({{cat.refdes}})</li> <!--| sort(attribute='name', reverse = False)-->
+    {% endfor %}
+</ul>

@@ -1,10 +1,9 @@
 import sys
 from app_comp import db
-from app_comp.models import temp_bd, Category, Pattern
+from app_comp.models import temp_bd, Category, Pattern, Component
 from app_comp.tools import database_tools as dt
+from app_comp.tools import forms_validation as fv
 from app_comp.forms import existing_patterns, existing_categories
-
-
 
 
 if __name__ == '__main__':
