@@ -2,7 +2,7 @@ from app_comp import db
 
 
 temp_bd = {'company': 'TorsionPLUS',
-           "user": "Master",
+           "user": "Master Inquisitor",
            'Email': ""
            }
 
@@ -45,7 +45,7 @@ class Component(db.Model):
     pattern_name = db.Column(db.String(128), db.ForeignKey("patterns.name"))
 
     def __str__(self):
-        return f'{self.value} {self.pattern_name}; count={self.count} id:({self.id})'
+        return f'id:({self.id}) {self.value} {self.pattern_name}; count={self.count} '
 
 
 class PCBoard(db.Model):

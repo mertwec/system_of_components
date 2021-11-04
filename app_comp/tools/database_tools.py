@@ -14,7 +14,7 @@ existing_categories = [c.name for c in read_from_table(db, Category)]
 
 
 def write_component_to_table(db, kwarg: dict):
-    print(kwarg)
+    # print(kwarg)
     component = Component(value=kwarg['value'],
                           tolerance=kwarg['tolerance'],
                           voltage=kwarg["voltage"],
@@ -30,3 +30,8 @@ def write_component_to_table(db, kwarg: dict):
 def write_pattern_to_table(db, arg):
     db.session.add(Pattern(name=arg))
     db.session.commit()
+
+
+def get_components_from_category(db, category):
+    cat_components = db.session.query(Category.components).filter(Category.name == category).all()
+    return cat_components

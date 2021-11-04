@@ -3,6 +3,12 @@ from decimal import Decimal
 
 # for pattern
 def check_exist_value_in_db(new_value: str, values_in_db: list):
+    """ for creating new pattern, if it exists in bd
+    return True, else False
+    :param new_value:
+    :param values_in_db:
+    :return: bool
+    """
     return new_value in values_in_db
 
 
@@ -37,7 +43,7 @@ def _category_unit(unit, category) -> bool:
         return False
 
 
-def check_component_for_db(data: dict) -> dict or str:
+def generate_component_for_db(data: dict) -> dict or str:
     """conversion to form for database
     :param data: dict from form "component"
     :return: str if error of validations
@@ -47,9 +53,9 @@ def check_component_for_db(data: dict) -> dict or str:
         return 'unit and category do not correspond!'
 
     if data['unit'] != "None":
-        value = f"{data['value']}{data['unit']}"
+        value = f"{data['value'].upper()}{data['unit']}"
     else:
-        value = data['value']
+        value = data['value'].upper()
 
     return {"value": value,
             "tolerance": data['tolerance'],
@@ -60,3 +66,5 @@ def check_component_for_db(data: dict) -> dict or str:
             "category_name": data['category'],
             "pattern_name": data['pattern'],
             }
+
+

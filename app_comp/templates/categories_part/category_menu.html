@@ -1,5 +1,12 @@
-<ul>
-    {% for cat in all_categories %}
-        <li>{{cat.name|title}} ({{cat.refdes}})</li> <!--| sort(attribute='name', reverse = False)-->
-    {% endfor %}
-</ul>
+
+<form action="" method="post" >
+    <!--button name="category" value="orcs">waaagh!!</--button><br-->
+    <ul>
+        {% for cat in all_categories %}
+            <li>
+                <button name="category" value="{{cat.name}}" width="100px">
+            {{cat.name|title}}  ({{cat.refdes}})</button>
+             </li>
+        {% endfor %}
+    </ul>
+</form>
