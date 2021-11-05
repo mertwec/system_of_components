@@ -15,37 +15,48 @@ def index():
     return render_template("index.html", title="Home", bd=temp_bd)
 
 
-@app.route('/categories/<string:type_category>', methods=['get', 'post'])
-def categories(type_category):
+@app.route('/categories/<string:type_category>', methods=['get'])
+def categories(type_category='menu'):
     all_cat = db.session.query(Category).order_by(Category.name).all()
-    if request.method == 'POST':
-        value = request.form.get('category')
-        cat_comp = db.session.query(Component).filter(Component.category_name == value).all()
-        print(cat_comp)
-        print(cat_comp[0].value, cat_comp[0].count)
+    category = type_category
+    if category != 'menu':
+        components_from_category = get_components_from_category(db, category, Component)
+        print(components_from_category)
+        if components_from_category:
+            print(components_from_category[0])
+            return render_template("categories.html",
+                                   title='Categories',
+                                   all_categories=all_cat,
+                                   components_of_category=components_from_category,
+                                   bd=temp_bd, )
+        else:
+            return redirect(url_for("categories", type_category='menu'))
     else:
         print("its GET")
-    return render_template("categories.html",
-                           title='Categories',
-                           all_categories=all_cat,
-                           type_category=type_category,
-                           bd=temp_bd,)
+        return render_template("categories.html",
+                               title='Categories',
+                               all_categories=all_cat,
+                               bd=temp_bd,)
 
 
 @app.route('/creation', methods=['get', 'post'])
 def create_component():
     form = ComponentAddForm()
     if form.validate_on_submit():
-        all_data = form.data
+        all_data = form.data    # get all data from form
+        print('form date:', all_data)
         component_date = generate_component_for_db(all_data)
         if isinstance(component_date, str):
             flash(f"{component_date}", "Warning")
         elif isinstance(component_date, dict):
-
-            """check on creation component in db"""
-
-            write_component_to_table(db, component_date)
-            flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
+            name = (component_date["value"], component_date['pattern_name'])
+            category = component_date['category_name']
+            names_db = get_components_from_category(db, category, Component.value, Component.pattern_name)
+            if check_exist_value_in_db(name, names_db):
+                flash(f'Component  "{name}" already exists', 'Warning')
+            else:
+                write_component_to_table(db, component_date)
+                flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
         return redirect(url_for('create_component'))
     return render_template('create_component/create_component.html',
                            title='creation',

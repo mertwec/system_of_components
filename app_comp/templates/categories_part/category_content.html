@@ -1,11 +1,23 @@
 <div>
-    <table align="center" cellpadding="5" border="1px">
+{% if components_of_category %}
+    <table align="center" border="1px">
         <tr>
-            <td>Value</td>
-            <td>Tol,%</td>
-            <td>Pattern</td>
-            <td>Count</td>
-            <td>Comment</td>
+        {% for key in components_of_category[0].get_parameters_as_dict().keys() %}
+            <td>{{ key }}</td>
+        {% endfor %}
         </tr>
+
+        {% for comp in components_of_category %}
+        <tr>
+            {% for value in comp.get_parameters_as_dict().values() %}
+            <td> {{value}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+
     </table>
+{% else %}
+    <img width="350px" src="../static/images/AM_icon.jpg" alt="Adeptus Mechanicus are wait">
+{% endif %}
+
 </div>

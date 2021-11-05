@@ -1,11 +1,11 @@
-from decimal import Decimal
+# from decimal import Decimal
 
 
 # for pattern
-def check_exist_value_in_db(new_value: str, values_in_db: list):
+def check_exist_value_in_db(new_value, values_in_db: list):
     """ for creating new pattern, if it exists in bd
     return True, else False
-    :param new_value:
+    :param new_value: str or tuple of str
     :param values_in_db:
     :return: bool
     """
@@ -19,7 +19,6 @@ def _category_unit(unit, category) -> bool:
     :param category:
     :return: True if crash validation
     """
-
     check = {'R': 'resistor',
              'F': 'capacitor',
              'z': 'quartz',
@@ -57,14 +56,12 @@ def generate_component_for_db(data: dict) -> dict or str:
     else:
         value = data['value'].upper()
 
-    return {"value": value,
-            "tolerance": data['tolerance'],
-            "voltage": data['voltage'],
-            "power": float(data['power']),
-            "count": data['count'],
-            'comment': data['comment'],
-            "category_name": data['category'],
-            "pattern_name": data['pattern'],
-            }
-
-
+    del data["csrf_token"]
+    del data['submit']
+    up_data = {"value": value,
+               "power": float(data['power']),
+               "category_name": data['category'],
+               "pattern_name": data['pattern'],
+               }
+    data.update(up_data)
+    return data

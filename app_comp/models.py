@@ -44,8 +44,26 @@ class Component(db.Model):
     category_name = db.Column(db.String(128), db.ForeignKey("categories.name"))
     pattern_name = db.Column(db.String(128), db.ForeignKey("patterns.name"))
 
+    def __init__(self, value, voltage, tolerance, comment, count, power, pattern_name):
+        self.value = value
+        self.tolerance = tolerance
+        self.voltage = voltage
+        self.comment = comment
+        self.count = count
+        self.power = power
+        self.pattern_name = pattern_name
+
     def __str__(self):
         return f'id:({self.id}) {self.value} {self.pattern_name}; count={self.count} '
+
+    def get_parameters_as_dict(self) -> dict:
+        return {"value": self.value,
+                "tolerance": self.tolerance,
+                "voltage": self.voltage,
+                "power": self.power,
+                "count": self.count,
+                "comment": self.comment,
+                }
 
 
 class PCBoard(db.Model):

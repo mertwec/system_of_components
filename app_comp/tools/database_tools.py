@@ -32,6 +32,6 @@ def write_pattern_to_table(db, arg):
     db.session.commit()
 
 
-def get_components_from_category(db, category):
-    cat_components = db.session.query(Category.components).filter(Category.name == category).all()
+def get_components_from_category(db, category, *args):
+    cat_components = db.session.query(*args).filter(Component.category_name == category).all()
     return cat_components
