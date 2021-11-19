@@ -6,17 +6,20 @@ from app_comp.tools.forms_validation import *
 from app_comp.tools.database_tools import write_component_to_table, \
                                             write_pattern_to_table, \
                                             get_components_from_category
+from app_comp.tools.quotes import random_quote
 from decimal import Decimal
 
 
 @app.route('/')
 @app.route('/index')
 def index():
+    temp_bd['quote'] = random_quote()
     return render_template("index.html", title="Home", bd=temp_bd)
 
 
 @app.route('/categories/<string:type_category>', methods=['get'])
 def categories(type_category='menu'):
+
     all_cat = db.session.query(Category).order_by(Category.name).all()
     category = type_category
     if category != 'menu':
@@ -24,6 +27,7 @@ def categories(type_category='menu'):
         print(components_from_category)
         if components_from_category:
             print(components_from_category[0])
+            temp_bd['quote'] = random_quote()
             return render_template("categories.html",
                                    title='Categories',
                                    all_categories=all_cat,
@@ -33,6 +37,7 @@ def categories(type_category='menu'):
             return redirect(url_for("categories", type_category='menu'))
     else:
         print("its GET")
+        temp_bd['quote'] = random_quote()
         return render_template("categories.html",
                                title='Categories',
                                all_categories=all_cat,
@@ -58,6 +63,7 @@ def create_component():
                 write_component_to_table(db, component_date)
                 flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
         return redirect(url_for('create_component'))
+    temp_bd['quote'] = random_quote()
     return render_template('create_component/create_component.html',
                            title='creation',
                            form=form,
@@ -77,6 +83,7 @@ def create_pattern_component():
             write_pattern_to_table(db, name)
             flash(f'Pattern "{name}" is created', 'Success')
         return redirect(url_for('create_pattern_component'))
+    temp_bd['quote'] = random_quote()
     return render_template('create_component/create_pattern.html',
                            title='creation pattern',
                            form=form,
@@ -86,4 +93,5 @@ def create_pattern_component():
 @app.route('/test/<ig>')
 def test(ig):
     print(ig)
+    temp_bd['quote'] = random_quote()
     return render_template("test_pass.html", ig=ig, bd=temp_bd)
