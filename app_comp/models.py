@@ -32,6 +32,16 @@ class Pattern(db.Model):
         return f'{self.id}: {self.name}'
 
 
+class AssociatedCompPcb(db.Model):
+    __tablename__ = 'component_pcb'
+    pcb_id = db.Column(db.Integer, db.ForeignKey('PCB.id'), primary_key=True)
+    comp_id = db.Column(db.Integer, db.ForeignKey('components.id'), primary_key=True)
+    comp_count = db.Column(db.Integer)
+
+    component = db.relationship('Component', back_populates='pcboards')
+    pcb = db.relationship('PCBoard', back_populates='components')
+
+
 class Component(db.Model):
     __tablename__ = 'components'
     id = db.Column(db.Integer, primary_key=True)
@@ -43,8 +53,10 @@ class Component(db.Model):
     comment = db.Column(db.Text)
     category_name = db.Column(db.String(128), db.ForeignKey("categories.name"))
     pattern_name = db.Column(db.String(128), db.ForeignKey("patterns.name"))
+    pcboards = db.relationship("AssociatedCompPcb",
+                               back_populates='component')
 
-    def __init__(self, value, voltage, tolerance, comment, count, power, pattern_name):
+    def __init__(self, value, voltage, tolerance, comment, count, power, pattern_name, category_name):
         self.value = value
         self.tolerance = tolerance
         self.voltage = voltage
@@ -52,6 +64,7 @@ class Component(db.Model):
         self.count = count
         self.power = power
         self.pattern_name = pattern_name
+        self.category_name = category_name
 
     def __str__(self):
         return f'id:({self.id}) {self.value} {self.pattern_name}; count={self.count} '
@@ -71,3 +84,6 @@ class PCBoard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     version = db.Column(db.String(32), default='v1.0')
+    count_boards = db.Column(db.Integer, default=0)
+    components = db.relationship("AssociatedCompPcb",
+                                 back_populates='pcb',)

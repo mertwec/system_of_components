@@ -11,7 +11,7 @@ migrate = Migrate(app, db,)
 
 # since in 'views' import app because import here
 from app_comp import models, views
-from app_comp.models import Component, Category, Pattern
+from app_comp.models import Component, Category, Pattern, PCBoard, AssociatedCompPcb
 
 
 @app.shell_context_processor
@@ -22,4 +22,6 @@ def make_shell_context():
             'Component': Component,
             'Category': Category,
             'Pattern': Pattern,
+            'PCBoard': PCBoard,
+            'AssociatedCompPcb': AssociatedCompPcb,
             }
