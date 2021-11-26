@@ -37,8 +37,8 @@ def select_unic_component(readed_object, pcb_name ) -> dict:
     print(col_name)
     pcb_values = dict()
     for field in readed_object:
-        if field[0] and field[-1].lower()!='nm' and field[-1].lower()!='not mount':  # count not empty and value != nm
-            pcb_values[field[-1]] = {col_name[i]:field[i] for i in range(len(col_name)-1)}            
+        if field[0] and field[-1].lower() != 'nm' and field[-1].lower() != 'not mount':  # count not empty and value != nm
+            pcb_values[field[-1]] = {col_name[i]: field[i] for i in range(len(col_name)-1)}
     return [pcb_name, pcb_values]
     
 

@@ -3,10 +3,10 @@
 
 # for pattern
 def check_exist_value_in_db(new_value, values_in_db: list):
-    """ for creating new pattern, if it exists in bd
+    """ for creating new element in DB, if it exists in BD
     return True, else False
-    :param new_value: str or tuple of str
-    :param values_in_db:
+    :param new_value: str or tuple of strs
+    :param values_in_db: list of tuples
     :return: bool
     """
     return new_value in values_in_db
@@ -43,7 +43,7 @@ def _category_unit(unit, category) -> bool:
 
 
 def generate_component_for_db(data: dict) -> dict or str:
-    """conversion to form for database
+    """conversion form to dictionary for database
     :param data: dict from form "component"
     :return: str if error of validations
             dict if all rights

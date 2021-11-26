@@ -1,4 +1,4 @@
-from app_comp.models import Category, Pattern, Component
+from app_comp.models import Category, Pattern, Component, PCBoard
 from app_comp import db
 
 
@@ -6,6 +6,9 @@ unit_list = [None, "R", "kR", "MR", "pF", 'nF', "mkF", 'mkH', 'kHz', "MHz"]
 
 
 def read_from_table(dbase, table):
+    """read all information from the table
+    :type
+    """
     return dbase.session.query(table).all()
 
 
@@ -27,11 +30,14 @@ def write_component_to_table(db, kwarg: dict):
     db.session.commit()
 
 
-def write_pattern_to_table(db, arg):
-    db.session.add(Pattern(name=arg))
+def write_column_to_table(db, column: object):
+    """column :param -- object of table
+    example: column = Column(arg1=arg1, arg2=arg2, ... argN=argN)"""
+    db.session.add(column)
     db.session.commit()
 
 
 def get_components_from_category(db, category, *args):
-    cat_components = db.session.query(*args).filter(Component.category_name == category).all()
+    filter_param = Component.category_name == category
+    cat_components = db.session.query(*args).filter(filter_param).all()
     return cat_components

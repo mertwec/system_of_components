@@ -4,7 +4,7 @@ from app_comp.models import temp_bd, Category, Pattern, Component
 from app_comp.forms import PatternAddForm, ComponentAddForm
 from app_comp.tools.forms_validation import *
 from app_comp.tools.database_tools import write_component_to_table, \
-                                            write_pattern_to_table, \
+                                            write_column_to_table, \
                                             get_components_from_category
 from app_comp.tools.quotes import random_quote
 from decimal import Decimal
@@ -19,14 +19,11 @@ def index():
 
 @app.route('/categories/<string:type_category>', methods=['get'])
 def categories(type_category='menu'):
-
     all_cat = db.session.query(Category).order_by(Category.name).all()
     category = type_category
     if category != 'menu':
         components_from_category = get_components_from_category(db, category, Component)
-        print(components_from_category)
         if components_from_category:
-            print(components_from_category[0])
             temp_bd['quote'] = random_quote()
             return render_template("categories.html",
                                    title='Categories',
@@ -36,7 +33,6 @@ def categories(type_category='menu'):
         else:
             return redirect(url_for("categories", type_category='menu'))
     else:
-        print("its GET")
         temp_bd['quote'] = random_quote()
         return render_template("categories.html",
                                title='Categories',
@@ -54,9 +50,12 @@ def create_component():
         if isinstance(component_date, str):
             flash(f"{component_date}", "Warning")
         elif isinstance(component_date, dict):
+            # validation
             name = (component_date["value"], component_date['pattern_name'])
             category = component_date['category_name']
-            names_db = get_components_from_category(db, category, Component.value, Component.pattern_name)
+            names_db = get_components_from_category(db, category,
+                                                    Component.value,
+                                                    Component.pattern_name)
             if check_exist_value_in_db(name, names_db):
                 flash(f'Component  "{name}" already exists', 'Warning')
             else:
@@ -80,7 +79,8 @@ def create_pattern_component():
         if check_exist_value_in_db(name, names_db):
             flash(f'Pattern "{name}" already exists', 'Warning')
         else:
-            write_pattern_to_table(db, name)
+            new_pattern = Pattern(name=name)
+            write_column_to_table(db, new_pattern)
             flash(f'Pattern "{name}" is created', 'Success')
         return redirect(url_for('create_pattern_component'))
     temp_bd['quote'] = random_quote()

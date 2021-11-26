@@ -45,10 +45,10 @@ class AssociatedCompPcb(db.Model):
 class Component(db.Model):
     __tablename__ = 'components'
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.String(128), unique=True, index=True, nullable=False)
+    value = db.Column(db.String(128), index=True, nullable=False)
     tolerance = db.Column(db.Integer, default=None)   # %
     voltage = db.Column(db.Integer, default=None)  # V
-    power = db.Column(db.Float, default=None)
+    power = db.Column(db.Float, default=None)   # W
     count = db.Column(db.Integer, default=0)
     comment = db.Column(db.Text)
     category_name = db.Column(db.String(128), db.ForeignKey("categories.name"))
@@ -67,15 +67,16 @@ class Component(db.Model):
         self.category_name = category_name
 
     def __str__(self):
-        return f'id:({self.id}) {self.value} {self.pattern_name}; count={self.count} '
+        return f'id_{self.id}: {self.value} pattern:{self.pattern_name}; count={self.count} '
 
     def get_parameters_as_dict(self) -> dict:
         return {"value": self.value,
-                "tolerance": self.tolerance,
-                "voltage": self.voltage,
-                "power": self.power,
-                "count": self.count,
-                "comment": self.comment,
+                "tolerance, %": self.tolerance,
+                "pattern": self.pattern_name,
+                "voltage, V": self.voltage,
+                "power, W": self.power,
+                "commentary": self.comment,
+                "Count": self.count
                 }
 
 
@@ -85,5 +86,9 @@ class PCBoard(db.Model):
     name = db.Column(db.String(128), nullable=False)
     version = db.Column(db.String(32), default='v1.0')
     count_boards = db.Column(db.Integer, default=0)
+
     components = db.relationship("AssociatedCompPcb",
                                  back_populates='pcb',)
+
+    def __str__(self):
+        return f"{self.name}_{self.version}: board count = {self.count_boards}"

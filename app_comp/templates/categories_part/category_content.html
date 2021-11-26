@@ -3,7 +3,7 @@
     <table align="center" border="1px">
         <tr>
         {% for key in components_of_category[0].get_parameters_as_dict().keys() %}
-            <td>{{ key }}</td>
+            <td>{{ key.title() }}</td>
         {% endfor %}
         </tr>
 
