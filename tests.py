@@ -49,4 +49,5 @@ def test_get_pcb_from_comp():
 
 if __name__ == '__main__':
     # test_add_comp_pcb()
-    test_get_pcb()
+    # test_get_pcb()
+    dt.create_category(db, "connector", "X")

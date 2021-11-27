@@ -2,11 +2,11 @@
 
 
 # for pattern
-def check_exist_value_in_db(new_value, values_in_db: list):
+def check_exist_value_in_db(new_value, values_in_db):
     """ for creating new element in DB, if it exists in BD
     return True, else False
     :param new_value: str or tuple of strs
-    :param values_in_db: list of tuples
+    :param values_in_db: generator of values or tuples
     :return: bool
     """
     return new_value in values_in_db

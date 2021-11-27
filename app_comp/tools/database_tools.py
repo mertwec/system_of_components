@@ -2,7 +2,7 @@ from app_comp.models import Category, Pattern, Component, PCBoard
 from app_comp import db
 
 
-unit_list = [None, "R", "kR", "MR", "pF", 'nF', "mkF", 'mkH', 'kHz', "MHz"]
+unit_list = [None, "R", "kR", "MR", "pF", "mkF", 'mkH', 'kHz', "MHz"]
 
 
 def read_from_table(dbase, table):
@@ -16,7 +16,25 @@ existing_patterns = [p.name for p in read_from_table(db, Pattern)]
 existing_categories = [c.name for c in read_from_table(db, Category)]
 
 
+def write_column_to_table(db, column: object):
+    """
+    :param column: object for writing in table
+    example: column = Column(arg1=arg1, arg2=arg2, ... argN=argN)"""
+    db.session.add(column)
+    db.session.commit()
+
+
+def create_category(db, name, refdes):
+    cat = Category(name=name, refdes=refdes)
+    write_column_to_table(db, cat)
+
+
 def write_component_to_table(db, kwarg: dict):
+    """ write only in table "Component"
+    :param db:
+    :param kwarg: dict of parameters component
+    :return: None
+    """
     # print(kwarg)
     component = Component(value=kwarg['value'],
                           tolerance=kwarg['tolerance'],
@@ -26,15 +44,7 @@ def write_component_to_table(db, kwarg: dict):
                           comment=kwarg["comment"],
                           category_name=kwarg["category_name"],
                           pattern_name=kwarg["pattern_name"],)
-    db.session.add(component)
-    db.session.commit()
-
-
-def write_column_to_table(db, column: object):
-    """column :param -- object of table
-    example: column = Column(arg1=arg1, arg2=arg2, ... argN=argN)"""
-    db.session.add(column)
-    db.session.commit()
+    write_column_to_table(db, component)
 
 
 def get_components_from_category(db, category, *args):

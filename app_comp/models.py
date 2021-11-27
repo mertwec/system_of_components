@@ -71,7 +71,7 @@ class Component(db.Model):
 
     def get_parameters_as_dict(self) -> dict:
         return {"value": self.value,
-                "tolerance, %": self.tolerance,
+                "tol, %": self.tolerance,
                 "pattern": self.pattern_name,
                 "voltage, V": self.voltage,
                 "power, W": self.power,

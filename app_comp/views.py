@@ -1,7 +1,7 @@
 from app_comp import app, db
 from flask import render_template, redirect, url_for, flash, request
-from app_comp.models import temp_bd, Category, Pattern, Component
-from app_comp.forms import PatternAddForm, ComponentAddForm
+from app_comp.models import temp_bd, Category, Pattern, Component, PCBoard, AssociatedCompPcb
+from app_comp.forms import PatternAddForm, ComponentAddForm, PCBAddForm
 from app_comp.tools.forms_validation import *
 from app_comp.tools.database_tools import write_component_to_table, \
                                             write_column_to_table, \
@@ -48,7 +48,7 @@ def create_component():
         print('form date:', all_data)
         component_date = generate_component_for_db(all_data)
         if isinstance(component_date, str):
-            flash(f"{component_date}", "Warning")
+            flash(f"{component_date}", "Warning")   # unit and category do not correspond!
         elif isinstance(component_date, dict):
             # validation
             name = (component_date["value"], component_date['pattern_name'])
@@ -63,7 +63,7 @@ def create_component():
                 flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
         return redirect(url_for('create_component'))
     temp_bd['quote'] = random_quote()
-    return render_template('create_component/create_component.html',
+    return render_template('create/create_component.html',
                            title='creation',
                            form=form,
                            bd=temp_bd)
@@ -74,7 +74,7 @@ def create_pattern_component():
     form = PatternAddForm()
     if form.validate_on_submit():
         name = form.name.data.upper()
-        names_db = [i[0] for i in db.session.query(Pattern.name).all()]
+        names_db = (i[0] for i in db.session.query(Pattern.name).all())
         # validations
         if check_exist_value_in_db(name, names_db):
             flash(f'Pattern "{name}" already exists', 'Warning')
@@ -83,15 +83,33 @@ def create_pattern_component():
             write_column_to_table(db, new_pattern)
             flash(f'Pattern "{name}" is created', 'Success')
         return redirect(url_for('create_pattern_component'))
+
     temp_bd['quote'] = random_quote()
-    return render_template('create_component/create_pattern.html',
+    return render_template('create/create_pattern.html',
                            title='creation pattern',
                            form=form,
                            bd=temp_bd)
 
 
-@app.route('/test/<ig>')
-def test(ig):
-    print(ig)
+@app.route('/creation/PCB', methods=['get', 'post'])
+def create_pcb():
+    form = PCBAddForm()
+    if form.validate_on_submit():
+        name = form.name.data.upper()
+        version = form.version.data
+        count_b = form.count_boards.data
+        pcb_db = ((i.name, i.version) for i in db.session.query(PCBoard).all())
+        if check_exist_value_in_db((name, version), pcb_db):
+            flash(f'Board "{name}" {version} already exists', 'Warning')
+        else:
+            new_pcb = PCBoard(name=name,
+                              version=version,
+                              count_boards=count_b)
+            write_column_to_table(db, new_pcb)
+            flash(f'PCB "{name} {version}" is created', 'Success')
+        return redirect(url_for('create_pcb'))
     temp_bd['quote'] = random_quote()
-    return render_template("test_pass.html", ig=ig, bd=temp_bd)
+    return render_template('create/create_pcb.html',
+                           title='creation PCBoard',
+                           form=form,
+                           bd=temp_bd)

@@ -1,0 +1,21 @@
+{% extends "base.html"%}
+
+{% block content %}
+    <h3>Create Board</h3>
+<table>
+    <tr>
+        <th>add board</th>
+        <th>add elements of board</th>
+    </tr>
+    <tr>
+        <td>
+            <form name="PCB"  method="POST">
+            {{ form.csrf_token() }}
+            {% include "create/universal_template/flush_message.html"%}
+	        {% include "create/universal_template/create_form.html" %}
+            </form>
+        </td>
+        <td></td>
+    </tr>
+</table>
+{% endblock %}

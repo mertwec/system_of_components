@@ -1,0 +1,17 @@
+{% extends "base.html"%}
+
+{% block content %}
+<table>
+    <tr>
+        <th><h3>Create Component</h3></th>
+        <th><h3>Load Components from file.csv</h3></th>
+    </tr>
+    <tr>
+        <td>{% block create_component %}
+            {% endblock %}</td>
+
+        <td>{% block loadfile_component %}
+            {% endblock %}</td>
+    </tr>
+</table>
+{% endblock %}

@@ -1,0 +1,15 @@
+<table border="0px" cellpadding="5">
+    {% for field in form if field.name != 'csrf_token' %}
+    <tr>
+        {% if field.name == "submit" %}
+            <td colspan="2" height="25" align="right">{{ form.submit() }}</td>
+        {%else%}
+        <td>{{ field.label() }}</td>
+        <td>{{ field() }} </td>
+        <td>{% for error in field.errors %}
+                <div class="error">{{ error }} </div>
+            {% endfor %}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>

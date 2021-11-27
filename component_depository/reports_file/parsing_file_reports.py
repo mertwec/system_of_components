@@ -4,17 +4,18 @@ import sys
 import pprint
 
 
-def find_file(type_file="csv"):
+path_to_files = r'./' 
+
+
+def find_file(path = path_to_files, type_file="csv"):
     """select file with expansion (type_file) default=.csv
-    return list of all files
-    """
-    
-    lfile_ = [File for File in os.listdir(r'') if File.endswith(f'.{type_file}')]
+    return list of all files"""    
+    lfile_ = [File for File in os.listdir(path) if File.endswith(f'.{type_file}')]
     # D={k:v for(k,v) in zip(range(1,(len(lfile)+1)),lfile)} # файлы с заданными ключами
     return lfile_
 
 
-def select_unic_component(readed_object, pcb_name ) -> dict:
+def select_unic_component(readed_object, pcb_name) -> dict:
     """
     return list:
         
@@ -44,7 +45,7 @@ def select_unic_component(readed_object, pcb_name ) -> dict:
 
 if __name__ == "__main__":
     report_file = find_file()[0]
-    print(report_file[:-4])
+    print(report_file[:-4])		# breack ".pcb"
     with open(report_file, newline='', encoding='utf-8', ) as object_csv:
         rowreader = csv.reader(object_csv,  delimiter=';')
         try:
@@ -53,5 +54,3 @@ if __name__ == "__main__":
             sys.exit(f'file {report_file}, line {rowreader.line_num}: {e}')
         
         pprint.pprint(pcb_object)
-
-    
