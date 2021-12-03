@@ -8,16 +8,16 @@
             <title>System of components</title>
         {% endif %}
         <link rel="shortcut icon" href="/static/images/favicon.png" type="image/png">
+        <link rel="stylesheet" href="/static/style.css" >
     </head>
 
     <header>
         {% include "navigation.html" %}
         {% include "rand_quotes.html" %}
-            <hr>
     </header>
 
-
     <body>
+    <hr>
         <h2>Hello {{bd.user}}</h2>
         {% block content %}
 

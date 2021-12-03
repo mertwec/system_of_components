@@ -3,10 +3,8 @@ from flask import render_template, redirect, url_for, flash, request
 from app_comp.models import temp_bd, Category, Pattern, Component, PCBoard, AssociatedCompPcb
 from app_comp.forms import PatternAddForm, ComponentAddForm, PCBAddForm
 from app_comp.tools.forms_validation import *
-from app_comp.tools.database_tools import write_component_to_table, \
-                                            write_column_to_table, \
-                                            get_components_from_category
 from app_comp.tools.quotes import random_quote
+import app_comp.tools.database_tools as dbt
 from decimal import Decimal
 
 
@@ -22,7 +20,7 @@ def categories(type_category='menu'):
     all_cat = db.session.query(Category).order_by(Category.name).all()
     category = type_category
     if category != 'menu':
-        components_from_category = get_components_from_category(db, category, Component)
+        components_from_category = dbt.get_components_from_category(db, category, Component)
         if components_from_category:
             temp_bd['quote'] = random_quote()
             return render_template("categories.html",
@@ -53,15 +51,16 @@ def create_component():
             # validation
             name = (component_date["value"], component_date['pattern_name'])
             category = component_date['category_name']
-            names_db = get_components_from_category(db, category,
+            names_db = dbt.get_components_from_category(db, category,
                                                     Component.value,
                                                     Component.pattern_name)
             if check_exist_value_in_db(name, names_db):
                 flash(f'Component  "{name}" already exists', 'Warning')
             else:
-                write_component_to_table(db, component_date)
+                dbt.write_component_to_table(db, component_date)
                 flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
         return redirect(url_for('create_component'))
+    form.pattern.choices = [p.name for p in dbt.read_from_table(db, Pattern)]
     temp_bd['quote'] = random_quote()
     return render_template('create/create_component.html',
                            title='creation',
@@ -80,7 +79,7 @@ def create_pattern_component():
             flash(f'Pattern "{name}" already exists', 'Warning')
         else:
             new_pattern = Pattern(name=name)
-            write_column_to_table(db, new_pattern)
+            dbt.write_column_to_table(db, new_pattern)
             flash(f'Pattern "{name}" is created', 'Success')
         return redirect(url_for('create_pattern_component'))
 
@@ -105,7 +104,7 @@ def create_pcb():
             new_pcb = PCBoard(name=name,
                               version=version,
                               count_boards=count_b)
-            write_column_to_table(db, new_pcb)
+            dbt.write_column_to_table(db, new_pcb)
             flash(f'PCB "{name} {version}" is created', 'Success')
         return redirect(url_for('create_pcb'))
     temp_bd['quote'] = random_quote()

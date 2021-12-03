@@ -33,3 +33,7 @@ class PCBAddForm(FlaskForm):
     version = StringField("Version:", default="v1.0", validators=[DataRequired()])
     count_boards = IntegerField("Count:", default=0)
     submit = SubmitField('Create printed circuit board')
+
+
+class LoadPCBComponentsForm(FlaskForm):
+    pass

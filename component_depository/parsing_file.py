@@ -6,12 +6,12 @@ class FileInPath:
     path_to_files = r'./'   # this directory
     
     def __init__(self, path=path_to_files, type_file='csv'):
-        self.path = os.path.abspath(path_to_files)
+        
+        self.path = os.path.abspath(self.path_to_files)
         self.type_file = type_file
-    
-    def message(self):
-        _notexist = f'not exist file with exp {self.type_file}'
-        _notcorrect = "inputed uncorrect key, try again"
+        
+        self.message_notexist = f'not exist file with exp {self.type_file}'
+        self.message_notcorrect = "inputed uncorrect key, try again"      
         
         
     def find_file(self):
@@ -22,23 +22,30 @@ class FileInPath:
 
     def numbering_file_to_key(self) -> dict:
         """enumerate files"""
-        return {k:v for(k,v) in zip(range(1,(len(self.find_file)+1)),self.find_file)}
+        return {k:v for(k,v) in zip(range(1,(len(self.find_file())+1)),self.find_file())}
     
-    #TODO
-    def select_file(self, files: dict):
+    def select_file(self, files:dict):
         """select file in terminal"""
+        
         pprint.pprint(files)
         while files:
             sel = input("input key of file: ")
             if sel.isdigit() and int(sel) in files.keys():
                 return files[int(sel)]
             else:
-                print(self.message._notexist)
+                print(self.message_notcorrect)
         else:
-            print(self.message._notcorrect)
+            print(self.message_notexist)
+            
 
+def open_csv_file(path_to_file):
+    pass
 
 if __name__ == "__main__":
-    fop = FileInPath() 
-    #TODO
-    input()
+    fop = FileInPath(type_file='csv') 
+    dfile = fop.numbering_file_to_key()
+    sf = fop.select_file(dfile)
+    print(type(sf))
+    
+    
+    

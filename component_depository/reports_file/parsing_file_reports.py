@@ -41,6 +41,31 @@ def select_unic_component(readed_object, pcb_name) -> dict:
         if field[0] and field[-1].lower() != 'nm' and field[-1].lower() != 'not mount':  # count not empty and value != nm
             pcb_values[field[-1]] = {col_name[i]: field[i] for i in range(len(col_name)-1)}
     return [pcb_name, pcb_values]
+
+
+def refdes_to_cat():
+    pass
+
+def parsing_value(): 
+    """
+    return: value, tolerance, voltage, power"""
+    pass
+
+
+def preparation_components(pcb_components:dict):
+    """comps: dict
+    {value1:{
+          count:N, ComponentName:name, RefDes:rd, PatternName:pn },
+    value2:{
+        count:N, ComponentName:name, RefDes:rd, PatternName:pn }
+    
+    """
+    for comp in pcb_components:
+        category = refdes_to_cat()
+        count = pass # todo
+        pattern = pass # todo
+        value, tolerance, voltage, power = parsing_value
+        
     
 
 if __name__ == "__main__":

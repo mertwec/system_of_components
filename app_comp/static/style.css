@@ -1,0 +1,22 @@
+.main {
+    display: inline-block;
+    width:100%;
+    }
+.left {
+    width:50%;
+    float:left;
+    }
+.right {
+    display: inline-block;
+    width:50%;
+    float: right;
+    text-align:right;
+    }
+figure.centred {
+    display: block;
+    text-align: center; /* Выравнивание по центру */
+    font-style: italic; /* Курсивное начертание */
+    margin-top: 0; /* Отступ сверху */
+    margin-bottom: 5px; /* Отступ снизу */
+    color: #666; /* Цвет подрисуночной подписи */
+   }

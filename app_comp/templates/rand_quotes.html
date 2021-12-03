@@ -1,8 +1,12 @@
+
 {% if bd.quote %}
-<p align="right">
-    <q> {{bd.quote[0]}} </q><br>
-    <cite> {{bd.quote[1]}} </cite>
-</p>
+<div class=main>
+    <div class=left></div>
+    <div class=right>
+        <q> {{bd.quote[0]}} </q><br>
+        <cite> {{bd.quote[1]}} </cite>
+    </div>
+</div>
 {% else %}
 <p align="right">
     well, and what you want?
