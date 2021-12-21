@@ -1,6 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, SelectField, IntegerField, DecimalField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, \
+    TextAreaField, SelectField, IntegerField,\
+    DecimalField, FileField
+from wtforms import validators
+from wtforms.validators import DataRequired, Regexp
 
 import app_comp.tools.database_tools as dbt
 
@@ -32,8 +35,5 @@ class PCBAddForm(FlaskForm):
     name = StringField("Name pcb:", validators=[DataRequired()])
     version = StringField("Version:", default="v1.0", validators=[DataRequired()])
     count_boards = IntegerField("Count:", default=0)
+    file_report = FileField("Report file csv:")     # , validators=[Regexp(regex='\w\.csv$')])
     submit = SubmitField('Create printed circuit board')
-
-
-class LoadPCBComponentsForm(FlaskForm):
-    pass

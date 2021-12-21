@@ -29,7 +29,11 @@ def create_category(db, name, refdes):
     write_column_to_table(db, cat)
 
 
-def write_component_to_table(db, kwarg: dict):
+def map_refdes_category(db) -> dict:
+    return {i.refdes: i.name for i in read_from_table(db, Category)}
+
+
+def create_component(db, kwarg: dict):
     """ write only in table "Component"
     :param db:
     :param kwarg: dict of parameters component

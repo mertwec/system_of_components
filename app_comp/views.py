@@ -1,7 +1,8 @@
 from app_comp import app, db
 from flask import render_template, redirect, url_for, flash, request
 from app_comp.models import temp_bd, Category, Pattern, Component, PCBoard, AssociatedCompPcb
-from app_comp.forms import PatternAddForm, ComponentAddForm, PCBAddForm
+from app_comp.forms import PatternAddForm, ComponentAddForm, \
+                            PCBAddForm
 from app_comp.tools.forms_validation import *
 from app_comp.tools.quotes import random_quote
 import app_comp.tools.database_tools as dbt
@@ -57,7 +58,7 @@ def create_component():
             if check_exist_value_in_db(name, names_db):
                 flash(f'Component  "{name}" already exists', 'Warning')
             else:
-                dbt.write_component_to_table(db, component_date)
+                dbt.create_component(db, component_date)
                 flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
         return redirect(url_for('create_component'))
     form.pattern.choices = [p.name for p in dbt.read_from_table(db, Pattern)]
@@ -90,21 +91,30 @@ def create_pattern_component():
                            bd=temp_bd)
 
 
-@app.route('/creation/PCB', methods=['get', 'post'])
+@app.route('/creation/PCB', methods=['GET', 'POST'])
 def create_pcb():
     form = PCBAddForm()
     if form.validate_on_submit():
+        data = form.data
         name = form.name.data.upper()
         version = form.version.data
         count_b = form.count_boards.data
+        file = form.file_report.data
+        if request.method == "POST" and file:
+            _data = request.files[form.file_report.name]
+            print(form.file_report.name, _data.filename)
+            print(_data.stream.read())
+        print(data)
         pcb_db = ((i.name, i.version) for i in db.session.query(PCBoard).all())
+        print(pcb_db)
         if check_exist_value_in_db((name, version), pcb_db):
             flash(f'Board "{name}" {version} already exists', 'Warning')
         else:
             new_pcb = PCBoard(name=name,
                               version=version,
                               count_boards=count_b)
-            dbt.write_column_to_table(db, new_pcb)
+            # dbt.write_column_to_table(db, new_pcb)
+
             flash(f'PCB "{name} {version}" is created', 'Success')
         return redirect(url_for('create_pcb'))
     temp_bd['quote'] = random_quote()

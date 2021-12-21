@@ -1,6 +1,8 @@
+before creating: bring components to the same form
+
 create "report file" for parsing with "parsing_file_reports.py":
 
-в P-CAD2006 PCB
+into P-CAD2006 PCB
 	File -- Reports
 
 select:

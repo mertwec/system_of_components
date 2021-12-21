@@ -1,6 +1,7 @@
 from app_comp import db
 from app_comp.tools.quotes import random_quote
 
+
 temp_bd = {'company': "TorsionPLUS",
            'user': "Master Inquisitor",
            'quote': random_quote(),     # type of "quote:list"=[quote:str, author:str]

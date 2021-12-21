@@ -2,7 +2,11 @@ from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import os
 
+
+abs_path = os.path.abspath(r"./")   # D:\PyProgect\system_of_components
+path_to_json = abs_path + r"\app_comp\static\quotes.json"
 
 app = Flask(__name__)
 app.config.from_object(Config)
