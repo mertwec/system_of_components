@@ -2,8 +2,9 @@ from app_comp import db
 from app_comp.tools.quotes import random_quote
 
 
-temp_bd = {'company': "TorsionPLUS",
+temp_bd = {'company': "Adeptus Mechanicus",
            'user': "Master Inquisitor",
+           'contacts': "Mars. Valleys of the Mariner. F.'DevMechanic', s.42 r.3",
            'quote': random_quote(),     # type of "quote:list"=[quote:str, author:str]
            }
 
@@ -85,11 +86,13 @@ class PCBoard(db.Model):
     __tablename__ = 'PCB'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
-    version = db.Column(db.String(32), default='v1.0')
+    version = db.Column(db.Float, default=1.0)
     count_boards = db.Column(db.Integer, default=0)
+    comment = db.Column(db.Text)
 
     components = db.relationship("AssociatedCompPcb",
-                                 back_populates='pcb',)
+                                 back_populates='pcb',
+                                 cascade='all, delete')
 
     def __str__(self):
-        return f"{self.name}_{self.version}: board count = {self.count_boards}"
+        return f"{self.name}-{self.version}: {self.comment}; board count = {self.count_boards}"

@@ -5,11 +5,11 @@ from app_comp import db
 unit_list = [None, "R", "kR", "MR", "pF", "mkF", 'mkH', 'kHz', "MHz"]
 
 
-def read_from_table(dbase, table):
+def read_from_table(db, table: object):  # Category or Category.name
     """read all information from the table
     :type
     """
-    return dbase.session.query(table).all()
+    return db.session.query(table).all()
 
 
 existing_patterns = [p.name for p in read_from_table(db, Pattern)]

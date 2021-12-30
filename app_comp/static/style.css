@@ -12,6 +12,8 @@
     float: right;
     text-align:right;
     }
+
+/* for picture in "index.html" */
 figure.centred {
     display: block;
     text-align: center; /* Выравнивание по центру */
@@ -20,3 +22,11 @@ figure.centred {
     margin-bottom: 5px; /* Отступ снизу */
     color: #666; /* Цвет подрисуночной подписи */
    }
+
+.centred {
+    display: block;
+    text-align: left; /* Выравнивание текста */
+    margin-top: 0; /* Отступ сверху */
+    margin-left: 25px; /* Отступ слева */
+    margin-bottom: 5px; /* Отступ снизу */
+    }

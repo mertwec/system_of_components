@@ -2,46 +2,25 @@
 
 {% block content %}
     <h3>Create Board</h3>
+
 <table>
     <tr>
-        <th>add board</th>
-        <th>add elements of board</th>
+        <th>Board</th>
+        <th>Elements of board</th>
     </tr>
     <tr>
         <td>
-            <form name="PCB"  method="POST" enctype="multipart/form-data">
+            <form name="board"  method="POST" enctype="multipart/form-data">
             {{ form.csrf_token() }}
             {% include "create/universal_template/flush_message.html"%}
 	        {% include "create/universal_template/create_form.html" %}
             </form>
         </td>
         <td>
-                <p>
-                    get "file report" from P-Cad:
-                    before creating: bring components to the same form
-                    create "report file" for parsing with "parsing_file_reports.py":
-                    в P-CAD2006 PCB
-                        File -- Reports
+            {% include 'create/create_pcb_parts/make_report_file.html'%}
 
-                    select:
-                        Bill of Materials (csv),
-                        File
-                        Separated list = ';'
-
-                    "Customise...":
-                        Format:
-                            File Extension = 'csv'
-
-                        Selection:
-                            1 Count
-                            2 ComponentName
-                            3 RefDes
-                            4 PatternName
-                            5 Value
-
-                    Generate
-                </p>
-
+            {# {% if %}
+            {% endif %} #}
         </td>
     </tr>
 </table>

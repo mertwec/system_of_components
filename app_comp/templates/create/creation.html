@@ -3,15 +3,28 @@
 {% block content %}
 <table>
     <tr>
-        <th>Create Component</th>
-        <th>Load Components from file.csv</th>
+        <td ><h3>Create {{title}}</h3></td>
+        <!--th>Load Components from file.csv</th-->
     </tr>
     <tr>
-        <td>{% block create_component %}
-            {% endblock %}</td>
+        <td>
+            <form name={{title}} action ="" method="POST">
+                {{ form.csrf_token() }}
+                {% include "create/universal_template/flush_message.html"%}
+                {% include "create/universal_template/create_form.html" %}
+            </form>
+        </td>
 
-        <td>{% block loadfile_component %}
-            {% endblock %}</td>
+        <td>
+            <figure class="centred" >
+                <img width="100%" src="../static/images/mechanicus-heretek.png" alt="mechanicus-heretek">
+                <figcaption> "Memento mori" </figcaption>
+            </figure>
+        </td>
     </tr>
 </table>
+{% if title == "Component" %}
+    <p>If category is not exist: <a href="{{ url_for('create_category') }}"> add Category </a> </p>
+    <p>If pattern is not exist: <a href="{{ url_for('create_pattern') }}"> add Pattern </a> </p>
+{% endif %}
 {% endblock %}

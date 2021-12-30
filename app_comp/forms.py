@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, \
     TextAreaField, SelectField, IntegerField,\
-    DecimalField, FileField
+    DecimalField, FileField, FloatField
 from wtforms import validators
 from wtforms.validators import DataRequired, Regexp
 
@@ -28,12 +28,14 @@ class PatternAddForm(FlaskForm):
 
 class CategoryAddForm(FlaskForm):
     name = StringField("Category:", validators=[DataRequired()])
+    refdes = StringField("RefDes:", validators=[DataRequired()])
     submit = SubmitField('Create Category')
 
 
 class PCBAddForm(FlaskForm):
     name = StringField("Name pcb:", validators=[DataRequired()])
-    version = StringField("Version:", default="v1.0", validators=[DataRequired()])
+    version = DecimalField("Version (float):", default=1.0, validators=[DataRequired()])
     count_boards = IntegerField("Count:", default=0)
-    file_report = FileField("Report file csv:")     # , validators=[Regexp(regex='\w\.csv$')])
+    comment = TextAreaField("Comment:")
+    file_report = FileField("Report file csv:")     #, validators=[Regexp(regex=r'[\S]+\.csv$')])
     submit = SubmitField('Create printed circuit board')
