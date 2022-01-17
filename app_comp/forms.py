@@ -34,8 +34,9 @@ class CategoryAddForm(FlaskForm):
 
 class PCBAddForm(FlaskForm):
     name = StringField("Name pcb:", validators=[DataRequired()])
-    version = DecimalField("Version (float):", default=1.0, validators=[DataRequired()])
+    version = FloatField("Version (float):", default=1.0, validators=[DataRequired()])
     count_boards = IntegerField("Count:", default=0)
     comment = TextAreaField("Comment:")
     file_report = FileField("Report file csv:")     #, validators=[Regexp(regex=r'[\S]+\.csv$')])
-    submit = SubmitField('Create printed circuit board')
+    submit_create = SubmitField('Create PCB')
+    submit = SubmitField('Component check')

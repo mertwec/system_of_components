@@ -3,12 +3,14 @@
     <tr>
         {% if field.name == "submit" %}
             <td colspan="2" height="25" align="right">{{ form.submit() }}</td>
+        {% elif field.name == "submit_create" %}
+            <td>Check the elements before creating PCB</td>
         {%else%}
-        <td>{{ field.label() }}</td>
-        <td>{{ field() }} </td>
-        <td>{% for error in field.errors %}
-                <div class="error">{{ error }} </div>
-            {% endfor %}</td>
+            <td>{{ field.label() }}</td>
+            <td>{{ field() }} </td>
+            <td>{% for error in field.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}</td>
         {% endif %}
     </tr>
     {% endfor %}

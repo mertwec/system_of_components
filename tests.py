@@ -13,59 +13,7 @@ import app_comp.tools.database_tools as dbt
 import app_comp.tools.preparing_filereport_date as prepfr
 
 
-class TestCRUDPattern:
-
-    def create_pattern(self):
-        pass
-
-    def read_pattern(self):
-        all_patt = dbt.read_from_table(db, Pattern)
-
-    def delete_pattern(self):
-        pass
-
-
-def test_get_comps_from_cat(category, db=db):
-    cfcat = dbt.get_components_from_category(db, category, Component)
-    return cfcat
-
-
-def test_add_comp_pcb():
-    b1 = db.session.query(PCBoard).get(1)
-    comp2 = db.session.query(Component).get(7)
-    comp3 = db.session.query(Component).get(8)
-    print(b1)
-    print(comp2, '\n', comp3)
-    ass1 = AssociatedCompPcb(comp_count=2, pcb_id=b1.id, comp_id=comp2.id)
-    ass2 = AssociatedCompPcb(comp_count=2, pcb_id=b1.id, comp_id=comp3.id)
-    db.session.add_all([ass1, ass2])
-    print(db.session.new)
-    db.session.commit()
-    print('done')
-
-
-def test_get_pcb():
-    pcbs = db.session.query(PCBoard).get(1)
-    print(pcbs)
-    for i in pcbs.components:
-        print(i.component.get_parameters_as_dict())
-
-
-def test_get_pcb_from_comp():
-    c = db.session.query(Component).get(5)
-    print(c)
-    print(c.pcboards)
-    for i in c.pcboards:
-        print(i.pcb)
-        print(i.component)
-
-
-def test_get_pattern_name():
-    return dbt.read_from_table(db, Pattern.name)
-
-
-def test_get_categories():
-    return dbt.read_from_table(db, Category)
+crud = dbt.CRUDTable()
 
 
 class TestParsReportFile(unittest.TestCase):
@@ -95,10 +43,10 @@ class TestParsReportFile(unittest.TestCase):
         'SCM-10': {'Count': '2', 'ComponentName': '90663-1101', 'RefDes': 'XPU1', 'PatternName': '90663-1101'},
         'SMAJ5CA': {'Count': '6', 'ComponentName': 'SMAJXXCA', 'RefDes': 'VD16', 'PatternName': 'SMA'},
         'SS24': {'Count': '1', 'ComponentName': 'SS24', 'RefDes': 'VD1', 'PatternName': 'SMA'}}]
-    map_rc = dbt.map_refdes_category(db=db)
+    map_rc = dbt.map_refdes_category()
 
-    # def setUp(self):
-    #     print('_'*60+"\nTest module 'app_comp.tools.preparing_filereport_date'")
+    def setUp(self):
+        print('_'*60+"\nTest module 'app_comp.tools.preparing_filereport_date'")
 
     def test_select_unique_component(self):
         self.assertEqual(self.out_list,
@@ -128,12 +76,101 @@ class TestParsReportFile(unittest.TestCase):
         self.assertEqual(out_comp, prepfr.parsing_components(in_comp, self.map_rc))
 
 
+class TestCRUDPattern(unittest.TestCase):
+
+    name = 'unreal_pattern'
+    @staticmethod
+    def create_pattern(name=name):
+        new_pattern = Pattern(name=name)
+        crud.write_to_table_column(new_pattern)
+
+    @staticmethod
+    def read_pattern():
+        return crud.read_table_all(Pattern.name)
+
+    @staticmethod
+    def delete_pattern(d_object):
+        crud.delete_table_column(d_object)
+
+    def setUp(self):
+        print('_'*60+"\nTest module 'TestCRUDPattern'")
+
+    def test_create_pattern(self):
+        self.create_pattern()
+        self.assertIn((self.name,), self.read_pattern(),
+                      msg=f'{self.name} not in {self.read_pattern()}')
+
+    def test_delete_pattern(self):
+        get_pn = crud.read_table_filter_first(Pattern, filter_param=Pattern.name == self.name)
+        print(get_pn)
+        crud.delete_table_column(get_pn)
+        self.assertNotIn((self.name,), self.read_pattern(),
+                         msg=f'{self.name} in {self.read_pattern()}')
+
+
+def test_dell():
+    # n = db.session.query(Pattern).get(17)
+    filp = PCBoard.name == 'PU'
+    n = crud.read_table_filter_first(PCBoard, filter_param=filp)
+    print(n, type(n))
+
+    # db.session.delete(n)
+    # db.session.commit()
+    # try:
+    #     nn = db.session.query(Pattern).get(7)
+    #     print(nn)
+    # except Exception as e:
+    #     print(e)
+
+
+def test_get_comps_from_cat(category):
+    cfcat = dbt.get_components_from_category(category, Component)
+    return cfcat
+
+
+def test_add_comp_pcb():
+    b1 = db.session.query(PCBoard).get(1)
+    comp2 = db.session.query(Component).get(7)
+    comp3 = db.session.query(Component).get(8)
+    print(b1)
+    print(comp2, '\n', comp3)
+    ass1 = AssociatedCompPcb(comp_count=2, pcb_id=b1.id, comp_id=comp2.id)
+    ass2 = AssociatedCompPcb(comp_count=2, pcb_id=b1.id, comp_id=comp3.id)
+    db.session.add_all([ass1, ass2])
+    print(db.session.new)
+    db.session.commit()
+    print('done')
+
+
+def test_get_pcb_from_comp():
+    c = db.session.query(Component).get(5)
+    print(c)
+    print(c.pcboards)
+    for i in c.pcboards:
+        print(i.pcb)
+        print(i.component)
+
+
+def test_search_component_in_db():
+    s_comp = [{'value': '0.47uF', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 4, 'pattern_name': 'SMD_2220', 'category_name': 'capacitor'},
+              {'value': '10MR', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 2, 'pattern_name': 'SMD_1206', 'category_name': 'resistor'},
+              {'value': 'BYG23M', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 8, 'pattern_name': 'SMA', 'category_name': 'diode'},
+              {'value': 'P6SMB440A', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 2, 'pattern_name': 'SMB', 'category_name': 'diode'},]
+    for i in s_comp:
+        cdb = dbt.search_component_in_db(i)
+        print(cdb)
+
+
+
 if __name__ == '__main__':
     # est_get_comps_from_cat('resistor', db=db)
     # test_get_pcb()
-    print(test_get_pattern_name())
-    for i in test_get_categories():
-        print(i.name, i.refdes)
+    # print(test_get_pattern_name())
+    # for i in test_get_categories():
+    #     print(i.name, i.refdes)
     # map_rc = dbt.map_refdes_category(db=db)
     # print(map_rc)
-    # unittest.main()
+    # test_dell()
+    test_search_component_in_db()
+
+    #unittest.main(verbosity=2)

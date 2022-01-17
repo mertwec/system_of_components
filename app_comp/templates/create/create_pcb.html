@@ -8,20 +8,27 @@
         <th>Board</th>
         <th>Elements of board</th>
     </tr>
+    <form name={{title}}  method="POST" enctype="multipart/form-data">
     <tr>
         <td>
-            <form name="board"  method="POST" enctype="multipart/form-data">
             {{ form.csrf_token() }}
             {% include "create/universal_template/flush_message.html"%}
 	        {% include "create/universal_template/create_form.html" %}
-            </form>
+
         </td>
         <td>
-            {% include 'create/create_pcb_parts/make_report_file.html'%}
-
-            {# {% if %}
-            {% endif %} #}
+            {% if prepared_rep_file %}
+                <div>
+                     {% for i in prepared_rep_file %}
+                        <p> {{ i }}</p>
+                     {% endfor %}
+                    <p>{{ form.submit_create() }}</p>
+                </div>
+            {% else%}
+                {% include "create/create_pcb_parts/make_report_file.html"%}
+            {% endif %}
         </td>
     </tr>
+    </form>
 </table>
 {% endblock %}
