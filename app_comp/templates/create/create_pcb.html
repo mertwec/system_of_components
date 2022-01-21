@@ -1,34 +1,62 @@
 {% extends "base.html"%}
 
+{% macro render_component(components) %}
+<table border="1" width="100%" cellspacing="2" cellpadding="3">
+    <tr>
+        <th>category</th> <th>component</th> <th>pattern</th> <th>count</th> <th>in db</th>
+    </tr>
+
+    {% for i in components %}<tr>
+        <td>{{i['category_name']}}</td>
+        <td>{{i['value']}} {{i['tolerance']}} {{ i['voltage']}} {{ i['power']}}</td>
+        <td>{{i['pattern_name']}}</td>
+        <td>{{i['count']}}</td>
+        <td>{{i['id_component']}}</td></tr>
+    {% endfor %}
+
+</table>
+{% endmacro %}
+
+
 {% block content %}
     <h3>Create Board</h3>
-
+<form name={{title}}  method="POST" enctype="multipart/form-data">
 <table>
     <tr>
         <th>Board</th>
         <th>Elements of board</th>
     </tr>
-    <form name={{title}}  method="POST" enctype="multipart/form-data">
     <tr>
         <td>
             {{ form.csrf_token() }}
             {% include "create/universal_template/flush_message.html"%}
 	        {% include "create/universal_template/create_form.html" %}
-
         </td>
         <td>
             {% if prepared_rep_file %}
                 <div>
-                     {% for i in prepared_rep_file %}
-                        <p> {{ i }}</p>
-                     {% endfor %}
-                    <p>{{ form.submit_create() }}</p>
+                    {% for elem in prepared_rep_file %}
+                        {% if loop.first and elem %}
+                            <p>existing component </p>
+                            <div class="color-text-green">
+                                {{ render_component(elem) }}
+                            </div>
+                        {% elif elem %}
+                            <p> not existing component </p>
+                            <div class="color-text-red">
+                                {{ render_component(elem) }}
+                                <a href="{{ url_for('create_component') }}" target="_blank">add component in DB</a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <p align="right" >{{ form.submit_create() }}</p>
                 </div>
             {% else%}
                 {% include "create/create_pcb_parts/make_report_file.html"%}
             {% endif %}
         </td>
     </tr>
-    </form>
+
 </table>
+</form>
 {% endblock %}

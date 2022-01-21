@@ -30,3 +30,11 @@ figure.centred {
     margin-left: 25px; /* Отступ слева */
     margin-bottom: 5px; /* Отступ снизу */
     }
+
+.color-text-red {
+    color: red;
+    }
+
+.color-text-green {
+    color: green;
+    }

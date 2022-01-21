@@ -1,4 +1,4 @@
-from app_comp import app,db
+from app_comp import app    #, db
 from flask import render_template, redirect, url_for, flash, request
 from app_comp.models import temp_bd, Category, Pattern, Component, PCBoard, AssociatedCompPcb
 from app_comp.forms import PatternAddForm, ComponentAddForm, \
@@ -22,7 +22,7 @@ def index():
 
 @app.route('/categories/<string:type_category>', methods=['get'])
 def categories(type_category='menu'):
-    all_cat = db.session.query(Category).order_by(Category.name).all()
+    all_cat = crud.read_table_sorted(Category, Category.name)
     category = type_category
     if category != 'menu':
         components_from_category = dbt.get_components_from_category(category, Component)
@@ -46,6 +46,8 @@ def categories(type_category='menu'):
 @app.route('/creation/component', methods=['get', 'post'])
 def create_component():
     form = ComponentAddForm()
+    form.pattern.choices = [p[0] for p in crud.read_table_all(Pattern.name)]
+    form.category.choices = [c[0] for c in crud.read_table_all(Category.name)]
     if form.validate_on_submit():
         all_data = form.data    # get all data from form
         component_date = generate_component_for_db(all_data)
@@ -67,7 +69,7 @@ def create_component():
                 dbt.create_component(component_date)
                 flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
         return redirect(url_for('create_component'))
-    form.pattern.choices = [p.name for p in crud.read_table_all(Pattern)]
+
     temp_bd['quote'] = random_quote()
     return render_template('create/creation.html',
                            title='Component',
@@ -135,20 +137,25 @@ def create_pcb():
         elif request.method == "POST" and data["file_report"] and data['submit']:
             _data = request.files[form.file_report.name]     # get file
             file_name = f"{name}-{version}"      # all name loaded file "DRIXDN630YI-3.0_SiC(30kW).csv"
-            file_object = _data.stream.read()   # read file
+            file_object = _data.stream.read()    # read file
 
-            prepared_file_object = pfrd.select_unique_component(file_object, pcb_name=file_name)    # [pcb_name, {parameters from file_object}]
+            # get only unique components from file_object(readed report_file) [pcb_name, {parameters from file_object}]
+            prepared_file_object = pfrd.select_unique_component(file_object, pcb_name=file_name)
+            # dict(refdes: category name)
             map_rdcateg = dbt.map_refdes_category()
+            # converting a component to write to db
             pcb_components = pfrd.parsing_components(prepared_file_object[1], map_rdcateg)
-            # pcb_components_indb = dbt.exists_components_in_db(pcb_components)
+            # check component on exist in db
+            pcb_components_in_db = dbt.exists_components_in_db(pcb_components)
+
             form.name = name
             form.version = version
             form.comment = data["comment"]
             form.count_boards = data["count_boards"]
             form.file_report = _data
-            print(2, data)
+            print(2, _data)
             return render_template('create/create_pcb.html',
-                                   prepared_rep_file=pcb_components,
+                                   prepared_rep_file=pcb_components_in_db,
                                    title='creation PCBoard',
                                    form=form,
                                    bd=temp_bd)

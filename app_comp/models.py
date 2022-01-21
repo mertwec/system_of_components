@@ -14,10 +14,9 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, index=True, nullable=False)
     refdes = db.Column(db.String(15), nullable=False)
-    components = db.relationship('Component',
-                                 backref='category',
-                                 lazy=True,
-                                 cascade='all, delete-orphan')
+    components = db.relationship('Component', backref='category',
+                                 # lazy='joined',
+                                 cascade='all, delete',)
 
     def __str__(self):
         return f'{self.id}: {self.refdes} - {self.name} '
@@ -28,7 +27,8 @@ class Pattern(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, index=True, nullable=False)
     component = db.relationship('Component', backref='pattern',
-                                cascade='all, delete-orphan', )
+                                # lazy='joined',
+                                cascade='all, delete', passive_deletes=True)
 
     def __str__(self):
         return f'{self.id}: {self.name}'
@@ -48,7 +48,7 @@ class Component(db.Model):
     __tablename__ = 'components'
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.String(128), index=True, nullable=False)
-    tolerance = db.Column(db.Integer, default=None)   # %
+    tolerance = db.Column(db.Float, default=None)   # %
     voltage = db.Column(db.Integer, default=None)  # V
     power = db.Column(db.Float, default=None)   # W
     count = db.Column(db.Integer, default=0)

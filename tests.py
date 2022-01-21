@@ -45,8 +45,8 @@ class TestParsReportFile(unittest.TestCase):
         'SS24': {'Count': '1', 'ComponentName': 'SS24', 'RefDes': 'VD1', 'PatternName': 'SMA'}}]
     map_rc = dbt.map_refdes_category()
 
-    def setUp(self):
-        print('_'*60+"\nTest module 'app_comp.tools.preparing_filereport_date'")
+    # def setUp(self):
+    #     print('_'*60+"\nTest module 'app_comp.tools.preparing_filereport_date'")
 
     def test_select_unique_component(self):
         self.assertEqual(self.out_list,
@@ -59,10 +59,9 @@ class TestParsReportFile(unittest.TestCase):
         self.assertEqual(cat, 'capacitor')
 
     def test_total_preparation_comp(self):
-        in_comp = {'0.1mkF 50V X7R': {'ComponentName': 'C_SMD_0805',
-                                      'Count': '6',
-                                      'PatternName': 'SMD_0805',
-                                      'RefDes': 'C1'}}
+        in_comp = {'0.1uF 50V X7R': {'Count': '6',
+                                     'PatternName': 'SMD_0805',
+                                     'RefDes': 'C1'}}
 
         out_comp = [{'value': '0.1mkF',
                      'tolerance': '',
@@ -92,8 +91,8 @@ class TestCRUDPattern(unittest.TestCase):
     def delete_pattern(d_object):
         crud.delete_table_column(d_object)
 
-    def setUp(self):
-        print('_'*60+"\nTest module 'TestCRUDPattern'")
+    # def setUp(self):
+    #     print('_'*60+"\nTest module 'TestCRUDPattern'")
 
     def test_create_pattern(self):
         self.create_pattern()
@@ -101,7 +100,7 @@ class TestCRUDPattern(unittest.TestCase):
                       msg=f'{self.name} not in {self.read_pattern()}')
 
     def test_delete_pattern(self):
-        get_pn = crud.read_table_filter_first(Pattern, filter_param=Pattern.name == self.name)
+        get_pn = crud.read_table_filter_first(Pattern, filter_param=(Pattern.name == self.name,))
         print(get_pn)
         crud.delete_table_column(get_pn)
         self.assertNotIn((self.name,), self.read_pattern(),
@@ -110,7 +109,7 @@ class TestCRUDPattern(unittest.TestCase):
 
 def test_dell():
     # n = db.session.query(Pattern).get(17)
-    filp = PCBoard.name == 'PU'
+    filp = (PCBoard.name == 'PU',)
     n = crud.read_table_filter_first(PCBoard, filter_param=filp)
     print(n, type(n))
 
@@ -152,14 +151,13 @@ def test_get_pcb_from_comp():
 
 
 def test_search_component_in_db():
-    s_comp = [{'value': '0.47uF', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 4, 'pattern_name': 'SMD_2220', 'category_name': 'capacitor'},
-              {'value': '10MR', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 2, 'pattern_name': 'SMD_1206', 'category_name': 'resistor'},
+    s_comp = [{'value': '0.47mkF', 'tolerance': '', 'voltage': '50V', 'power': '', 'comment': '', 'count': 4, 'pattern_name': 'SMD_2220', 'category_name': 'capacitor'},
+              {'value': '10MR', 'tolerance': '5%', 'voltage': '', 'power': '', 'comment': '', 'count': 2, 'pattern_name': 'SMD_1206', 'category_name': 'resistor'},
               {'value': 'BYG23M', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 8, 'pattern_name': 'SMA', 'category_name': 'diode'},
-              {'value': 'P6SMB440A', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 2, 'pattern_name': 'SMB', 'category_name': 'diode'},]
-    for i in s_comp:
-        cdb = dbt.search_component_in_db(i)
-        print(cdb)
+              {'value': 'P6SMB440A', 'tolerance': '', 'voltage': '', 'power': '', 'comment': '', 'count': 2, 'pattern_name': 'SMB', 'category_name': 'diode'}, ]
 
+    cdb = dbt.exists_components_in_db(s_comp)
+    print(cdb[0], '\n', cdb[1])
 
 
 if __name__ == '__main__':
@@ -173,4 +171,4 @@ if __name__ == '__main__':
     # test_dell()
     test_search_component_in_db()
 
-    #unittest.main(verbosity=2)
+    # unittest.main(verbosity=2)

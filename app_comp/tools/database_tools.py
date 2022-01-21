@@ -15,6 +15,12 @@ class CRUDTable:
         """
         return self.db.session.query(table).all()
 
+    def read_table_first(self, table: object):  # Category or Category.name
+        """read all information from the table
+        :type
+        """
+        return self.db.session.query(table).first()
+
     def write_to_table_column(self, column: object):
         """
         :param column: new object for writing in table
@@ -23,10 +29,20 @@ class CRUDTable:
         self.db.session.add(column)
         self.db.session.commit()
 
-    def read_table_filter_first(self, table, filter_param: tuple) -> object:
-        return self.db.session.query(table).filter(filter_param).first()
+    def read_table_filter_first(self, table, filter_param: tuple) -> list:
+        """
+        :param table: name of table: Component, PCBoard, etc/
+        :param filter_param: tuple of filters: (Component.name=='name', table.id=n, ets)
+        :return: result search: [], if nothing
+        """
+        return self.db.session.query(table).filter(*filter_param).first()
 
     def read_table_filter(self, table, filter_param: tuple) -> list:
+        """
+        :param table: name of table: Component, PCBoard, etc/
+        :param filter_param: tuple of filters: (Component.name=='name', table.id=n, ets)
+        :return: result search: [], if nothing
+        """
         return self.db.session.query(table).filter(*filter_param).all()
 
     def read_table_sorted(self, table, sorted_param):
@@ -43,8 +59,8 @@ class CRUDTable:
 
 
 crud = CRUDTable()
-existing_patterns = [p for p in crud.read_table_all(Pattern.name)]
-existing_categories = [c for c in crud.read_table_all(Category.name)]
+existing_patterns = [p[0] for p in crud.read_table_all(Pattern.name)]
+existing_categories = [c[0] for c in crud.read_table_all(Category.name)]
 
 
 def create_category(name, refdes):
@@ -83,20 +99,44 @@ def get_components_from_category(category, *args):
 
 
 def search_component_in_db(component_param: dict) -> dict:
+    """
+    :param component_param: {value': out_value['value'],
+                            'tolerance': out_value['tolerance'],
+                            'voltage': out_value['voltage'],
+                            'power': out_value['power'],
+                            'comment': out_value['comment'],
+                            'count': define_count(params_comp_pcb['Count']),
+                            'pattern_name': define_pattern(params_comp_pcb['PatternName'], category),
+                            'category_name': category}
+    :return:  {value': out_value['value'],
+                'tolerance': out_value['tolerance'],
+                'voltage': out_value['voltage'],
+                'power': out_value['power'],
+                'comment': out_value['comment'],
+                'count': define_count(params_comp_pcb['Count']),
+                'pattern_name': define_pattern(params_comp_pcb['PatternName'], category),
+                'category_name': category}
+                +
+                'id_component':((first id in db,))
+    """
     cp = component_param
-    # if cp['category_name'] == 'capacitor' or cp['category_name'] == 'resistor':
-    #     _filter = Component.value == cp['value'],\
-    #              Component.pattern_name == cp['pattern_name'],\
-    #              Component.tolerance == cp["tolerance"]
-    # else:
-    #     _filter = Component.value == cp['value'],\
-    #              Component.pattern_name == cp['pattern_name']
-    #
-    _filter = Component.value == cp['value'],  Component.pattern_name == cp['pattern_name']
-    cp['id_component'] = crud.read_table_filter(Component.id, _filter)
-
+    if cp['category_name'] == 'resistor':
+        _filter = (Component.value == cp['value'],
+                   Component.pattern_name == cp['pattern_name'],
+                   Component.tolerance == float(cp["tolerance"][:-1]))
+    else:
+        _filter = (Component.value == cp['value'],
+                   Component.pattern_name == cp['pattern_name'])
+    cp['id_component'] = crud.read_table_filter_first(Component.id, _filter)
     return cp
 
 
-def exists_components_in_db(pcb_components: list):
-    return list(map(search_component_in_db, pcb_components))
+def exists_components_in_db(pcb_components: list) -> tuple:
+    """
+    :param pcb_components:
+    :return: ([existing_pcb_components_in_db],[not_existing_pcb_components_in_db])
+    """
+    pcb_components_in_db = list(map(search_component_in_db, pcb_components))
+    existing_pcb_components_in_db = [i for i in pcb_components_in_db if i['id_component']]
+    not_existing_pcb_components_in_db = [i for i in pcb_components_in_db if not i['id_component']]
+    return existing_pcb_components_in_db, not_existing_pcb_components_in_db
