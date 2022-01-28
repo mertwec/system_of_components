@@ -34,23 +34,23 @@
         </td>
         <td>
             {% if prepared_rep_file %}
-                <div>
-                    {% for elem in prepared_rep_file %}
-                        {% if loop.first and elem %}
-                            <p>existing component </p>
-                            <div class="color-text-green">
-                                {{ render_component(elem) }}
-                            </div>
-                        {% elif elem %}
-                            <p> not existing component </p>
-                            <div class="color-text-red">
-                                {{ render_component(elem) }}
-                                <a href="{{ url_for('create_component') }}" target="_blank">add component in DB</a>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+            <div>
+                {% if prepared_rep_file[0] %}
+                    <p>existing component </p>
+                    <div class="color-text-green">
+                        {{ render_component(prepared_rep_file[0]) }}
+                    </div>
+                {% elif prepared_rep_file[1] %}
+                    <p> not existing component </p>
+                    <div class="color-text-red">
+                        {{ render_component(prepared_rep_file[1]) }}
+                        <a href="{{ url_for('create_component') }}" target="_blank">add component in DB</a>
+                    </div>
+                {% endif %}
+                {% if prepared_rep_file[0] and not prepared_rep_file[1] %}
                     <p align="right" >{{ form.submit_create() }}</p>
-                </div>
+                {% endif %}
+            </div>
             {% else%}
                 {% include "create/create_pcb_parts/make_report_file.html"%}
             {% endif %}

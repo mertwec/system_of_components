@@ -21,12 +21,24 @@ class CRUDTable:
         """
         return self.db.session.query(table).first()
 
+    def read_table_id(self, table: object) -> int:  # Category
+        return self.db.session.query(table.id).all()
+
     def write_to_table_column(self, column: object):
         """
         :param column: new object for writing in table
         example: column = Column(arg1=arg1, arg2=arg2, ... argN=argN)
         """
         self.db.session.add(column)
+        self.db.session.commit()
+
+    def write_n_column_to_table(self, columns: list):
+        """
+        :param columns: list of new objects for writing in table
+        example: columns = [Column(arg1=arg1, arg2=arg2, ... argN=argN),
+                            Column(arg1=arg1,.....), .. ]
+        """
+        self.db.session.add_all(columns)
         self.db.session.commit()
 
     def read_table_filter_first(self, table, filter_param: tuple) -> list:
@@ -113,7 +125,7 @@ def search_component_in_db(component_param: dict) -> dict:
                 'voltage': out_value['voltage'],
                 'power': out_value['power'],
                 'comment': out_value['comment'],
-                'count': define_count(params_comp_pcb['Count']),
+                'count': define_count(params_comp_pcb['Count']),  # count component 'value' in pcb
                 'pattern_name': define_pattern(params_comp_pcb['PatternName'], category),
                 'category_name': category}
                 +
@@ -127,7 +139,8 @@ def search_component_in_db(component_param: dict) -> dict:
     else:
         _filter = (Component.value == cp['value'],
                    Component.pattern_name == cp['pattern_name'])
-    cp['id_component'] = crud.read_table_filter_first(Component.id, _filter)
+    id_component = crud.read_table_filter_first(Component.id, _filter)  # (id,)
+    cp['id_component'] = id_component[0]
     return cp
 
 

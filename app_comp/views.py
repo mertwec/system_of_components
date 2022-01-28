@@ -1,6 +1,7 @@
 from app_comp import app    #, db
 from flask import render_template, redirect, url_for, flash, request
-from app_comp.models import temp_bd, Category, Pattern, Component, PCBoard, AssociatedCompPcb
+from app_comp.models import temp_bd, Category, Pattern, Component, \
+                                    PCBoard, AssociatedCompPcb
 from app_comp.forms import PatternAddForm, ComponentAddForm, \
                             PCBAddForm, CategoryAddForm
 from app_comp.tools.forms_validation import *
@@ -133,7 +134,6 @@ def create_pcb():
         pcb_db = ((i.name, i.version) for i in crud.read_table_all(PCBoard))
         if check_exist_value_in_db((name, version), pcb_db):
             flash(f'Board "{name}" {version} already exists', 'Warning')
-
         elif request.method == "POST" and data["file_report"] and data['submit']:
             _data = request.files[form.file_report.name]     # get file
             file_name = f"{name}-{version}"      # all name loaded file "DRIXDN630YI-3.0_SiC(30kW).csv"
@@ -146,14 +146,15 @@ def create_pcb():
             # converting a component to write to db
             pcb_components = pfrd.parsing_components(prepared_file_object[1], map_rdcateg)
             # check component on exist in db
-            pcb_components_in_db = dbt.exists_components_in_db(pcb_components)
-
+            pcb_components_in_db = dbt.exists_components_in_db(pcb_components)  #([exist in db],[not exist in db],): tuple
+            # if all components exist in DB
+            if not pcb_components_in_db[1]:
+                global exists_pcb_comps
+                exists_pcb_comps = pcb_components_in_db[0]
             form.name = name
             form.version = version
             form.comment = data["comment"]
             form.count_boards = data["count_boards"]
-            form.file_report = _data
-            print(2, _data)
             return render_template('create/create_pcb.html',
                                    prepared_rep_file=pcb_components_in_db,
                                    title='creation PCBoard',
@@ -161,14 +162,22 @@ def create_pcb():
                                    bd=temp_bd)
 
         elif request.method == "POST" and data['submit_create']:
-            print('create')
-            print(3, data)
-        # else:
-        #     new_pcb = PCBoard(name=name,
-        #                       version=version,
-        #                       count_boards=count_b)
-        #     # crud.write_to_table_column(new_pcb)
-        #    flash(f'PCB "{name} {version}" is created', 'Success')
+            new_pcb = PCBoard(name=name,
+                              version=version,
+                              count_boards=data['count_boards'],
+                              comment=data['comment'],)
+            print(exists_pcb_comps)    # [{'count': 4, 'id_component'}, {......}, ]
+            crud.write_to_table_column(new_pcb)
+            # new_pcb_id = crud.read_table_id(new_pcb)
+            print(new_pcb.name, new_pcb.id)
+
+            list_assoc_comp = [AssociatedCompPcb(pcb_id=new_pcb.id,
+                                                 comp_id=i['id_component'],
+                                                 comp_count=i['count'])
+                               for i in exists_pcb_comps]
+            crud.write_n_column_to_table(list_assoc_comp)
+            # todo if cant create associate table --> delete pcboard fbd flush err
+            flash(f'PCB "{name} {version}" is created', 'Success')
 
         return redirect(url_for('create_pcb'))
     temp_bd['quote'] = random_quote()
