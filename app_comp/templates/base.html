@@ -13,11 +13,12 @@
 
     <header>
         {% include "navigation.html" %}
-        {% include "rand_quotes.html" %}
+        {% include "rand_quotes.html" %}<hr>
+        {% block search %}
+        {% endblock %} <hr>
     </header>
 
     <body>
-    <hr>
         <h2>Hello {{bd.user}}</h2>
         {% block content %}
         {% endblock %}

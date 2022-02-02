@@ -40,3 +40,16 @@ class PCBAddForm(FlaskForm):
     file_report = FileField("Report file csv:")     #, validators=[Regexp(regex=r'[\S]+\.csv$')])
     submit_create = SubmitField('Create PCB')
     submit = SubmitField('Component check')
+
+
+class SearchComponent(FlaskForm):
+    value = StringField('Value:', validators=[DataRequired()])
+    category = SelectField("Category:", choices=[], default=None)
+    search = SubmitField('Search component')
+    change_comp = SubmitField('Change component')
+
+
+class SearchPCB(FlaskForm):
+    value = StringField('Value:', validators=[DataRequired()])
+    version = StringField('version', default=None)
+    search = SubmitField('Search PCB')

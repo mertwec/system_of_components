@@ -3,14 +3,14 @@
     width:100%;
     }
 .left {
-    width:50%;
-    float:left;
+    width: 50%;
+    float: left;
     }
+
 .right {
-    display: inline-block;
     width:50%;
     float: right;
-    text-align:right;
+    text-align: right;
     }
 
 /* for picture in "index.html" */

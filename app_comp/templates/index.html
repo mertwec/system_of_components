@@ -1,5 +1,22 @@
 {% extends 'base.html'%}
 
+{% block search %}
+    <table border=0 width=100%><tr>
+        <td>
+            <form name='search_component' action ="" method="POST">
+                {{ form_scom.csrf_token() }}
+                {{ form_scom.value()}} {{ form_scom.search()}}
+            </form>
+        </td>
+        <td align=right>
+            <form name='search_pcb' action ="" method="POST">
+                {{ form_spcb.csrf_token() }}
+                {{ form_spcb.value()}} {{ form_spcb.search()}}
+            </form>
+        </td>
+    </tr></table>
+{% endblock %}
+
 {% block content%}
     <figure class="centred" >
         <img width="50%" src="static/images/omnissiah.jpg" alt="Omnissiah">

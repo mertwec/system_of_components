@@ -3,7 +3,9 @@ from flask import render_template, redirect, url_for, flash, request
 from app_comp.models import temp_bd, Category, Pattern, Component, \
                                     PCBoard, AssociatedCompPcb
 from app_comp.forms import PatternAddForm, ComponentAddForm, \
-                            PCBAddForm, CategoryAddForm
+                            PCBAddForm, CategoryAddForm, SearchComponent, \
+                            SearchPCB
+
 from app_comp.tools.forms_validation import *
 from app_comp.tools.quotes import random_quote
 import app_comp.tools.database_tools as dbt
@@ -13,12 +15,37 @@ from decimal import Decimal
 
 crud = dbt.CRUDTable()
 
-@app.route('/')
-@app.route('/index')
-@app.route('/creation')
+
+@app.route('/',  methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def index():
+    form_scom = SearchComponent()
+    form_spcb = SearchPCB()
+    if form_scom.validate_on_submit():
+        search_value = form_scom.value.data
+        print(search_value)
+        return redirect(url_for("search_component", value_for_search='search_value'))
+
+    # if form_spcb.validate_on_submit():
+    #     search_pcb = form_spcb.value.data
+    #     print(search_pcb)
+    #     return redirect(url_for("search_component"))    # todo search_pcb
+
     temp_bd['quote'] = random_quote()
-    return render_template("index.html", title="Home", bd=temp_bd)
+    return render_template("index.html", title="Home",
+                           form_scom=form_scom,
+                           form_spcb=form_spcb,
+                           bd=temp_bd)
+
+
+@app.route('/search/<string:value_for_search>', methods=['GET'])
+def search_component(value_for_search='component'):
+    print('search:', value_for_search)
+
+    temp_bd['quote'] = random_quote()
+    return render_template('search/search.html',
+                           title='search component',
+                           bd=temp_bd)
 
 
 @app.route('/categories/<string:type_category>', methods=['get'])
@@ -168,7 +195,6 @@ def create_pcb():
                               comment=data['comment'],)
             print(exists_pcb_comps)    # [{'count': 4, 'id_component'}, {......}, ]
             crud.write_to_table_column(new_pcb)
-            # new_pcb_id = crud.read_table_id(new_pcb)
             print(new_pcb.name, new_pcb.id)
 
             list_assoc_comp = [AssociatedCompPcb(pcb_id=new_pcb.id,
@@ -185,3 +211,7 @@ def create_pcb():
                            title='creation PCBoard',
                            form=form,
                            bd=temp_bd)
+
+
+
+
