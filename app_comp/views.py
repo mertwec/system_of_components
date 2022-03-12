@@ -3,8 +3,7 @@ from flask import render_template, redirect, url_for, flash, request
 from app_comp.models import temp_bd, Category, Pattern, Component, \
                                     PCBoard, AssociatedCompPcb
 from app_comp.forms import PatternAddForm, ComponentAddForm, \
-                            PCBAddForm, CategoryAddForm, SearchComponent, \
-                            SearchPCB
+                            PCBAddForm, CategoryAddForm, Search
 
 from app_comp.tools.forms_validation import *
 from app_comp.tools.quotes import random_quote
@@ -19,22 +18,14 @@ crud = dbt.CRUDTable()
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    form_scom = SearchComponent()
-    form_spcb = SearchPCB()
-    if form_scom.validate_on_submit():
-        search_value = form_scom.value.data
+    form_search = Search()
+    if form_search.validate_on_submit():
+        search_value = form_search.value.data
         print(search_value)
-        return redirect(url_for("search_component", value_for_search='search_value'))
-
-    # if form_spcb.validate_on_submit():
-    #     search_pcb = form_spcb.value.data
-    #     print(search_pcb)
-    #     return redirect(url_for("search_component"))    # todo search_pcb
-
+        return redirect(url_for("search_component", value_for_search=search_value))
     temp_bd['quote'] = random_quote()
     return render_template("index.html", title="Home",
-                           form_scom=form_scom,
-                           form_spcb=form_spcb,
+                           form_search=form_search,
                            bd=temp_bd)
 
 
@@ -211,7 +202,3 @@ def create_pcb():
                            title='creation PCBoard',
                            form=form,
                            bd=temp_bd)
-
-
-
-

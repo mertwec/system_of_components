@@ -41,15 +41,20 @@ class PCBAddForm(FlaskForm):
     submit_create = SubmitField('Create PCB')
     submit = SubmitField('Component check')
 
+#
+# class SearchComponent(FlaskForm):
+#     value = StringField('Value:', validators=[DataRequired()])
+#     category = SelectField("Category:", choices=[], default=None)
+#     search = SubmitField('Search component')
+#     change_comp = SubmitField('Change component')
+#
+#
+# class SearchPCB(FlaskForm):
+#     value = StringField('Value:', validators=[DataRequired()])
+#     version = StringField('version', default=None)
+#     search = SubmitField('Search PCB')
 
-class SearchComponent(FlaskForm):
-    value = StringField('Value:', validators=[DataRequired()])
-    category = SelectField("Category:", choices=[], default=None)
-    search = SubmitField('Search component')
-    change_comp = SubmitField('Change component')
 
-
-class SearchPCB(FlaskForm):
-    value = StringField('Value:', validators=[DataRequired()])
-    version = StringField('version', default=None)
-    search = SubmitField('Search PCB')
+class Search(FlaskForm):
+    value = StringField("Value:", validators=[DataRequired()])
+    search = SubmitField('Search')
