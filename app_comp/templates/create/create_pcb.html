@@ -3,7 +3,7 @@
 {% macro render_component(components) %}
 <table border="1" width="100%" cellspacing="2" cellpadding="3">
     <tr>
-        <th>category</th> <th>component</th> <th>pattern</th> <th>count</th> <th>in db</th>
+        <th>category</th> <th>component</th> <th>pattern</th> <th>count</th> <th>id in db</th>
     </tr>
 
     {% for i in components %}<tr>
@@ -27,8 +27,8 @@
         <th>Elements of board</th>
     </tr>
     <tr>
-        <td>
-            {{ form.csrf_token() }}
+        <td align="top">
+            {{ form.hidden_tag() }}
             {% include "create/universal_template/flush_message.html"%}
 	        {% include "create/universal_template/create_form.html" %}
         </td>
@@ -40,7 +40,8 @@
                     <div class="color-text-green">
                         {{ render_component(prepared_rep_file[0]) }}
                     </div>
-                {% elif prepared_rep_file[1] %}
+                {% endif %}
+                {% if prepared_rep_file[1] %}
                     <p> not existing component </p>
                     <div class="color-text-red">
                         {{ render_component(prepared_rep_file[1]) }}

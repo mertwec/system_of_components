@@ -9,7 +9,8 @@
     <tr>
         <td>
             <form name={{title}} action ="" method="POST">
-                {{ form.csrf_token() }}
+                {# {{ form.csrf_token() }} #}
+                {{ form.hidden_tag() }}
                 {% include "create/universal_template/flush_message.html"%}
                 {% include "create/universal_template/create_form.html" %}
             </form>

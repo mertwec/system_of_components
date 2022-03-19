@@ -95,4 +95,4 @@ class PCBoard(db.Model):
                                  cascade='all, delete')
 
     def __str__(self):
-        return f"{self.name}-{self.version}: {self.comment}; board count = {self.count_boards}"
+        return f"{self.name}-{self.version}"

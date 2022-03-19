@@ -1,4 +1,4 @@
-from app_comp.models import Category, Pattern, Component, PCBoard
+from app_comp.models import Category, Pattern, Component
 from app_comp import db
 
 
@@ -25,18 +25,16 @@ class CRUDTable:
         return self.db.session.query(table.id).all()
 
     def write_to_table_column(self, column: object):
-        """
-        :param column: new object for writing in table
+        """ param column: new object for writing in table
         example: column = Column(arg1=arg1, arg2=arg2, ... argN=argN)
         """
         self.db.session.add(column)
         self.db.session.commit()
 
     def write_n_column_to_table(self, columns: list):
-        """
-        :param columns: list of new objects for writing in table
+        """ :param columns: list of new objects for writing in table
         example: columns = [Column(arg1=arg1, arg2=arg2, ... argN=argN),
-                            Column(arg1=arg1,.....), .. ]
+                            Column(arg1=arg1,.....), ... ]
         """
         self.db.session.add_all(columns)
         self.db.session.commit()
@@ -51,7 +49,7 @@ class CRUDTable:
 
     def read_table_filter(self, table, filter_param: tuple) -> list:
         """
-        :param table: name of table: Component, PCBoard, etc/
+        :param table: name of table -- Component, PCBoard, etc/
         :param filter_param: tuple of filters: (Component.name=='name', table.id=n, ets)
         :return: result search: [], if nothing
         """
@@ -92,11 +90,11 @@ def create_component(kwarg: dict):
     :param kwarg: dict of parameters component
     :return: None
     """
-    # print(kwarg)
+    print(kwarg)
     component = Component(value=kwarg['value'],
                           tolerance=kwarg['tolerance'],
                           voltage=kwarg["voltage"],
-                          power=kwarg["power"],
+                          power=float(kwarg["power"]),
                           count=kwarg["count"],
                           comment=kwarg["comment"],
                           category_name=kwarg["category_name"],
@@ -140,14 +138,19 @@ def search_component_in_db(component_param: dict) -> dict:
         _filter = (Component.value == cp['value'],
                    Component.pattern_name == cp['pattern_name'])
     id_component = crud.read_table_filter_first(Component.id, _filter)  # (id,)
-    cp['id_component'] = id_component[0]
+    if id_component:
+        cp['id_component'] = id_component[0]    # id or None
+    else:
+        cp['id_component'] = id_component
     return cp
 
 
 def exists_components_in_db(pcb_components: list) -> tuple:
     """
-    :param pcb_components:
+    check existing components in DB and file-report, when create new PCB
+    :param pcb_components: all components in added PCBoard
     :return: ([existing_pcb_components_in_db],[not_existing_pcb_components_in_db])
+    check existing components in db
     """
     pcb_components_in_db = list(map(search_component_in_db, pcb_components))
     existing_pcb_components_in_db = [i for i in pcb_components_in_db if i['id_component']]

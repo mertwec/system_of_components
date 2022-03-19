@@ -22,7 +22,11 @@ def select_unique_component(read_object: bytes, pcb_name):
                                         'PatternName': 'R_SMD_1210_M'}
             }]
     """
-    list_read_object = read_object.split(b'\r\n')  # get every component
+    # get every component
+    # todo add check type system win or linux
+    # list_read_object = read_object.split(b'\r\n') # for win32
+    list_read_object = read_object.split(b'\n')     # for linux
+
     list_read_object = [field.decode('utf-8').split(';') for field in list_read_object]
     column_name = list_read_object[0]
     pcb_values = dict()

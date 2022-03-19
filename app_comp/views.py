@@ -3,13 +3,15 @@ from flask import render_template, redirect, url_for, flash, request
 from app_comp.models import temp_bd, Category, Pattern, Component, \
                                     PCBoard, AssociatedCompPcb
 from app_comp.forms import PatternAddForm, ComponentAddForm, \
-                            PCBAddForm, CategoryAddForm, Search
+                            PCBAddForm, CategoryAddForm, SearchForm
 
-from app_comp.tools.forms_validation import *
+#from app_comp.tools.forms_validation import *
+
 from app_comp.tools.quotes import random_quote
 import app_comp.tools.database_tools as dbt
 import app_comp.tools.preparing_filereport_date as pfrd
 from decimal import Decimal
+import pprint
 
 
 crud = dbt.CRUDTable()
@@ -18,10 +20,9 @@ crud = dbt.CRUDTable()
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    form_search = Search()
+    form_search = SearchForm()
     if form_search.validate_on_submit():
         search_value = form_search.value.data
-        print(search_value)
         return redirect(url_for("search_component", value_for_search=search_value))
     temp_bd['quote'] = random_quote()
     return render_template("index.html", title="Home",
@@ -29,13 +30,14 @@ def index():
                            bd=temp_bd)
 
 
+# todo search function
 @app.route('/search/<string:value_for_search>', methods=['GET'])
 def search_component(value_for_search='component'):
     print('search:', value_for_search)
-
     temp_bd['quote'] = random_quote()
     return render_template('search/search.html',
-                           title='search component',
+                           title='search element',
+                           search_value=value_for_search,
                            bd=temp_bd)
 
 
@@ -69,24 +71,8 @@ def create_component():
     form.category.choices = [c[0] for c in crud.read_table_all(Category.name)]
     if form.validate_on_submit():
         all_data = form.data    # get all data from form
-        component_date = generate_component_for_db(all_data)
-        if isinstance(component_date, str):
-            flash(f"{component_date}", "Warning")   # unit and category do not correspond!
-        elif isinstance(component_date, dict):
-            # validation
-            name = (component_date["value"],
-                    component_date['pattern_name'],
-                    component_date['tolerance'],)
-            category = component_date['category_name']
-            names_db = dbt.get_components_from_category(category,
-                                                        Component.value,
-                                                        Component.pattern_name,
-                                                        Component.tolerance,)
-            if check_exist_value_in_db(name, names_db):
-                flash(f'Component  "{name}" already exists', 'Warning')
-            else:
-                dbt.create_component(component_date)
-                flash(f"component {component_date['category_name']}: {component_date['value']} is created", 'Success')
+        #dbt.create_component(all_data)
+        flash(f"component {all_data['category']}: {all_data['value']} is created", 'Success')
         return redirect(url_for('create_component'))
 
     temp_bd['quote'] = random_quote()
@@ -100,17 +86,10 @@ def create_component():
 def create_pattern():
     form = PatternAddForm()
     if form.validate_on_submit():
-        name = form.name.data.upper()
-        names_db = (i[0] for i in crud.read_table_all(Pattern.name))
-        # validations
-        if check_exist_value_in_db(name, names_db):
-            flash(f'Pattern "{name}" already exists', 'Warning')
-        else:
-            new_pattern = Pattern(name=name)
-            crud.write_to_table_column(new_pattern)
-            flash(f'Pattern "{name}" is created', 'Success')
+        new_pattern = Pattern(name=form.name.data.upper())
+        crud.write_to_table_column(new_pattern)
+        flash(f'Pattern "{new_pattern}" is created', 'Success')
         return redirect(url_for('create_pattern'))
-
     temp_bd['quote'] = random_quote()
     return render_template('create/creation.html',
                            title='Pattern',
@@ -123,17 +102,11 @@ def create_category():
     form = CategoryAddForm()
     if form.validate_on_submit():
         name = form.name.data.lower()
-        refdes = form.refdes.data
-        names_db = (i.name for i in crud.read_table_all(Category.name))
-        # validations
-        if check_exist_value_in_db(name, names_db):
-            flash(f'Category "{name}" already exists', 'Warning')
-        else:
-            new_category = Category(name=name, refdes=refdes)
-            crud.write_to_table_column(new_category)
-            flash(f'Category "{name}" ({refdes}) is created', 'Success')
+        refdes = form.refdes.data.upper()
+        new_category = Category(name=name, refdes=refdes)
+        crud.write_to_table_column(new_category)
+        flash(f'Category "{name}" ({refdes}) is created', 'Success')
         return redirect(url_for('create_category'))
-
     temp_bd['quote'] = random_quote()
     return render_template('create/creation.html',
                            title='Category',
@@ -146,17 +119,12 @@ def create_pcb():
     form = PCBAddForm()
     if form.validate_on_submit():
         data = form.data
-        name = data["name"].upper()
-        version = data["version"]
-        print(form.name)
-        pcb_db = ((i.name, i.version) for i in crud.read_table_all(PCBoard))
-        if check_exist_value_in_db((name, version), pcb_db):
-            flash(f'Board "{name}" {version} already exists', 'Warning')
-        elif request.method == "POST" and data["file_report"] and data['submit']:
+        if request.method == "POST" and data["file_report"] and data['submit']:
             _data = request.files[form.file_report.name]     # get file
-            file_name = f"{name}-{version}"      # all name loaded file "DRIXDN630YI-3.0_SiC(30kW).csv"
+            file_name = f"{data['name'].upper()}-{data['version']}"      # all name loaded file "DRIXDN630YI-3.0_SiC(30kW).csv"
             file_object = _data.stream.read()    # read file
 
+            # parsing file object
             # get only unique components from file_object(readed report_file) [pcb_name, {parameters from file_object}]
             prepared_file_object = pfrd.select_unique_component(file_object, pcb_name=file_name)
             # dict(refdes: category name)
@@ -169,10 +137,12 @@ def create_pcb():
             if not pcb_components_in_db[1]:
                 global exists_pcb_comps
                 exists_pcb_comps = pcb_components_in_db[0]
-            form.name = name
-            form.version = version
+            form.name = data['name']
+            form.version = data['version']
             form.comment = data["comment"]
             form.count_boards = data["count_boards"]
+            print(pcb_components_in_db)
+            print(len(pcb_components_in_db[0]), len(pcb_components_in_db[1]))
             return render_template('create/create_pcb.html',
                                    prepared_rep_file=pcb_components_in_db,
                                    title='creation PCBoard',
@@ -180,8 +150,8 @@ def create_pcb():
                                    bd=temp_bd)
 
         elif request.method == "POST" and data['submit_create']:
-            new_pcb = PCBoard(name=name,
-                              version=version,
+            new_pcb = PCBoard(name=data['name'],
+                              version=data['version'],
                               count_boards=data['count_boards'],
                               comment=data['comment'],)
             print(exists_pcb_comps)    # [{'count': 4, 'id_component'}, {......}, ]
@@ -190,11 +160,10 @@ def create_pcb():
 
             list_assoc_comp = [AssociatedCompPcb(pcb_id=new_pcb.id,
                                                  comp_id=i['id_component'],
-                                                 comp_count=i['count'])
-                               for i in exists_pcb_comps]
+                                                 comp_count=i['count']) for i in exists_pcb_comps]
             crud.write_n_column_to_table(list_assoc_comp)
-            # todo if cant create associate table --> delete pcboard fbd flush err
-            flash(f'PCB "{name} {version}" is created', 'Success')
+            # todo if cant create associate table --> delete pcboard and flush err
+            flash(f"PCB {data['name']} {data['version']} is created", 'Success')
 
         return redirect(url_for('create_pcb'))
     temp_bd['quote'] = random_quote()

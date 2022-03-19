@@ -14,8 +14,9 @@
     <header>
         {% include "navigation.html" %}
         {% include "rand_quotes.html" %}<hr>
-        {% block search %}
-        {% endblock %} <hr>
+        {% if form_search %}    
+            {% include "block_search.html" %}<hr>
+        {% endif %}
     </header>
 
     <body>

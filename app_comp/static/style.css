@@ -38,3 +38,7 @@ figure.centred {
 .color-text-green {
     color: green;
     }
+
+.error {
+    color: red;
+    }

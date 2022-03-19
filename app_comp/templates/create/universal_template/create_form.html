@@ -9,7 +9,7 @@
             <td>{{ field.label() }}</td>
             <td>{{ field() }} </td>
             <td>{% for error in field.errors %}
-                    <div class="error">{{ error }}</div>
+                    <span class="error">{{ error }}</span>
                 {% endfor %}</td>
         {% endif %}
     </tr>
