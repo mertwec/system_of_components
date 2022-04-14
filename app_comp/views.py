@@ -187,7 +187,7 @@ def create_pcb():
                            bd=temp_bd)
 
 
-@app.route('/change/<string: component>')
+@app.route('/change/<string:component>')
 def change_component(component):
 
     temp_bd['quote'] = random_quote()
