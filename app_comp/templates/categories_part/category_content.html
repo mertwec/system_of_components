@@ -14,8 +14,13 @@
             {% endfor %}
         </tr>
         {% endfor %}
-
     </table>
+    <div align="left">
+        {% for comp in components_of_category %}
+            <p>{{ comp.__str__() }}</p>
+
+        {% endfor %}
+    </div>
 {% else %}
     <img width="350px" src="../static/images/AM_icon.jpg" alt="Adeptus Mechanicus are wait">
 {% endif %}

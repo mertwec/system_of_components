@@ -1,12 +1,10 @@
-from app_comp import app    #, db
-from flask import render_template, redirect, url_for, flash, request
+from app_comp import app
+from flask import render_template, redirect, url_for, \
+                    flash, request, g, session
 from app_comp.models import temp_bd, Category, Pattern, Component, \
-                                    PCBoard, AssociatedCompPcb
+                            PCBoard, AssociatedCompPcb
 from app_comp.forms import PatternAddForm, ComponentAddForm, \
                             PCBAddForm, CategoryAddForm, SearchForm
-
-#from app_comp.tools.forms_validation import *
-
 from app_comp.tools.quotes import random_quote
 import app_comp.tools.database_tools as dbt
 import app_comp.tools.preparing_filereport_date as pfrd
@@ -17,27 +15,41 @@ import pprint
 crud = dbt.CRUDTable()
 
 
+@app.before_request
+def base():
+    g.form_search = SearchForm()
+
+
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    form_search = SearchForm()
-    if form_search.validate_on_submit():
-        search_value = form_search.value.data
-        return redirect(url_for("search_component", value_for_search=search_value))
+
     temp_bd['quote'] = random_quote()
     return render_template("index.html", title="Home",
-                           form_search=form_search,
                            bd=temp_bd)
 
 
-# todo search function
-@app.route('/search/<string:value_for_search>', methods=['GET'])
-def search_component(value_for_search='component'):
-    print('search:', value_for_search)
+@app.route('/search', methods=['POST'])
+def search_element():
+    if g.form_search.validate_on_submit():
+        data = g.form_search.data
+        text = data['value']
+        type_table = data['type_search']
+        search_result = dbt.search_text(type_table, text)
+
+        if search_result:
+            return render_template('search/search.html',
+                                   title='search element',
+                                   search_result=search_result,
+                                   type_table=type_table,
+                                   bd=temp_bd)
+        else:
+            flash(f'Value {text} in table {type_table} not exist, try again', 'Warning')
     temp_bd['quote'] = random_quote()
     return render_template('search/search.html',
                            title='search element',
-                           search_value=value_for_search,
+                           search_result=[],
+                           type_table='Nothing to look for. Try again.',
                            bd=temp_bd)
 
 
@@ -48,6 +60,7 @@ def categories(type_category='menu'):
     if category != 'menu':
         components_from_category = dbt.get_components_from_category(category, Component)
         if components_from_category:
+            print(components_from_category)
             temp_bd['quote'] = random_quote()
             return render_template("categories.html",
                                    title='menu Categories',
@@ -70,8 +83,9 @@ def create_component():
     form.pattern.choices = [p[0] for p in crud.read_table_all(Pattern.name)]
     form.category.choices = [c[0] for c in crud.read_table_all(Category.name)]
     if form.validate_on_submit():
+
         all_data = form.data    # get all data from form
-        #dbt.create_component(all_data)
+        dbt.create_component(all_data)
         flash(f"component {all_data['category']}: {all_data['value']} is created", 'Success')
         return redirect(url_for('create_component'))
 
@@ -137,7 +151,7 @@ def create_pcb():
             if not pcb_components_in_db[1]:
                 global exists_pcb_comps
                 exists_pcb_comps = pcb_components_in_db[0]
-            form.name = data['name']
+            form.name = data['name'].upper()
             form.version = data['version']
             form.comment = data["comment"]
             form.count_boards = data["count_boards"]
@@ -150,7 +164,7 @@ def create_pcb():
                                    bd=temp_bd)
 
         elif request.method == "POST" and data['submit_create']:
-            new_pcb = PCBoard(name=data['name'],
+            new_pcb = PCBoard(name=data['name'].upper(),
                               version=data['version'],
                               count_boards=data['count_boards'],
                               comment=data['comment'],)
@@ -163,7 +177,7 @@ def create_pcb():
                                                  comp_count=i['count']) for i in exists_pcb_comps]
             crud.write_n_column_to_table(list_assoc_comp)
             # todo if cant create associate table --> delete pcboard and flush err
-            flash(f"PCB {data['name']} {data['version']} is created", 'Success')
+            flash(f"PCB {data['name'].upper()} {data['version']} is created", 'Success')
 
         return redirect(url_for('create_pcb'))
     temp_bd['quote'] = random_quote()
@@ -171,3 +185,13 @@ def create_pcb():
                            title='creation PCBoard',
                            form=form,
                            bd=temp_bd)
+
+
+@app.route('/change/<string: component>')
+def change_component(component):
+
+    temp_bd['quote'] = random_quote()
+    return render_template("change/component.html",
+                           title='Categories',
+                           component=component,
+                           bd=temp_bd, )

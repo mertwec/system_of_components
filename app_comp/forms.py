@@ -96,7 +96,9 @@ class PCBAddForm(FlaskForm):
             raise ValidationError(f'PCBoard {pcb} already exists')
 
 
-# TODO
 class SearchForm(FlaskForm):
-    value = StringField("Value:", validators=[DataRequired()])
+    value = StringField("Serach value:", validators=[DataRequired()])
+    type_search = SelectField("type", choices=['Component', 'PCBoard', 'Pattern'],
+                              validators=[DataRequired()],
+                              default='Component')
     search = SubmitField('Search')

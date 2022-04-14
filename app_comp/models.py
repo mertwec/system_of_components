@@ -33,6 +33,9 @@ class Pattern(db.Model):
     def __str__(self):
         return f'{self.id}: {self.name}'
 
+    def get_components_from_pattern(self):
+        return [compt.get_parameters_as_dict() for compt in self.component]
+
 
 class AssociatedCompPcb(db.Model):
     __tablename__ = 'component_pcb'
@@ -58,27 +61,18 @@ class Component(db.Model):
     pcboards = db.relationship("AssociatedCompPcb",
                                back_populates='component')
 
-    def __init__(self, value, voltage, tolerance, comment, count, power, pattern_name, category_name):
-        self.value = value
-        self.tolerance = tolerance
-        self.voltage = voltage
-        self.comment = comment
-        self.count = count
-        self.power = power
-        self.pattern_name = pattern_name
-        self.category_name = category_name
-
     def __str__(self):
         return f'id_{self.id}: {self.value} pattern:{self.pattern_name}; count={self.count} '
 
     def get_parameters_as_dict(self) -> dict:
-        return {"value": self.value,
+        return {"category": self.category_name,
+                "value": self.value,
                 "tol, %": self.tolerance,
                 "pattern": self.pattern_name,
                 "voltage, V": self.voltage,
                 "power, W": self.power,
                 "commentary": self.comment,
-                "Count": self.count
+                "count": self.count
                 }
 
 
@@ -95,4 +89,10 @@ class PCBoard(db.Model):
                                  cascade='all, delete')
 
     def __str__(self):
-        return f"{self.name}-{self.version}"
+        return f"{self.name}-v{self.version} (count = {self.count_boards})"
+
+    def get_pcb_as_dict(self):
+        return {'name': f'{self.name}-v{self.version}',
+                'count board': self.count_boards,
+                'comment': self.comment,
+                }

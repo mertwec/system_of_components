@@ -1,5 +1,6 @@
 import pprint
 import re
+import sys
 
 
 def select_unique_component(read_object: bytes, pcb_name):
@@ -23,10 +24,13 @@ def select_unique_component(read_object: bytes, pcb_name):
             }]
     """
     # get every component
-    # todo add check type system win or linux
-    # list_read_object = read_object.split(b'\r\n') # for win32
-    list_read_object = read_object.split(b'\n')     # for linux
-
+    system = sys.platform   # 'linux', 'win32', 'darwin'
+    if system == 'win32':
+        list_read_object = read_object.split(b'\r\n')   # for win32
+    elif system == 'linux' or system == 'darwin':
+        list_read_object = read_object.split(b'\n')     # for linux
+    else:
+        pass
     list_read_object = [field.decode('utf-8').split(';') for field in list_read_object]
     column_name = list_read_object[0]
     pcb_values = dict()

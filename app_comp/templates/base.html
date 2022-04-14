@@ -12,10 +12,10 @@
     </head>
 
     <header>
-        {% include "navigation.html" %}
-        {% include "rand_quotes.html" %}<hr>
-        {% if form_search %}    
-            {% include "block_search.html" %}<hr>
+        {% include "base_part/navigation.html" %}
+        {% include "base_part/rand_quotes.html" %}<hr>
+        {% if g.form_search %}
+            {% include "base_part/block_search.html" %}<hr>
         {% endif %}
     </header>
 

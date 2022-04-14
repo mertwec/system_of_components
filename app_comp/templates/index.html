@@ -1,7 +1,14 @@
-{% extends 'base.html'%}
+{% extends 'base.html' %}
 
 
 {% block content%}
+
+<form method="get">
+    <input type="submit" value="create component" formaction="{{url_for('create_component')}}">
+    <input type="submit" value="create pattern" formaction="{{url_for('create_pattern')}}">
+    <input type="submit" value="create category" formaction="{{url_for('create_category')}}">
+</form>
+
     <figure class="centred" >
         <img width="50%" src="static/images/omnissiah.jpg" alt="Omnissiah">
         <figcaption>Ommnissiah with Me!</figcaption>

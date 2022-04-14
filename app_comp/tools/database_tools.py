@@ -1,4 +1,4 @@
-from app_comp.models import Category, Pattern, Component
+from app_comp.models import Category, Pattern, Component, PCBoard
 from app_comp import db
 
 
@@ -97,8 +97,8 @@ def create_component(kwarg: dict):
                           power=float(kwarg["power"]),
                           count=kwarg["count"],
                           comment=kwarg["comment"],
-                          category_name=kwarg["category_name"],
-                          pattern_name=kwarg["pattern_name"],)
+                          category_name=kwarg["category"],
+                          pattern_name=kwarg["pattern"],)
     crud.write_to_table_column(component)
 
 
@@ -156,3 +156,30 @@ def exists_components_in_db(pcb_components: list) -> tuple:
     existing_pcb_components_in_db = [i for i in pcb_components_in_db if i['id_component']]
     not_existing_pcb_components_in_db = [i for i in pcb_components_in_db if not i['id_component']]
     return existing_pcb_components_in_db, not_existing_pcb_components_in_db
+
+
+def search_text(type_table: str, text_search: str) -> list:
+    """
+    param: table = Pattern, PCBoard or Component
+    param: text_search: text for search
+    return list """
+    text = f'%{text_search}%'
+    if type_table == 'Pattern':
+        result = db.session.query(Pattern).filter(Pattern.name.like(text)).all()
+        list_comp = [p.get_components_from_pattern() for p in result]
+        res_comp = list()
+        for i in list_comp:
+            for j in i:
+                res_comp.append(j)
+        return res_comp
+    elif type_table == 'Component':
+        result = db.session.query(Component).filter(Component.value.like(text)).all()
+        if result:
+            return [r.get_parameters_as_dict() for r in result]
+        else:
+            return list()
+    elif type_table == 'PCBoard':
+        result = db.session.query(PCBoard).filter(PCBoard.name.like(text)).all()
+        return [i.get_pcb_as_dict() for i in result]
+    else:
+        return list()

@@ -1,6 +1,25 @@
 {% extends "base.html"%}
 
 {% block content %}
-Search: {{search_value}}
 
+{% include "create/universal_template/flush_message.html" %}
+
+Search:<p>{{type_table}}</p>
+<div>
+{% if search_result %}
+    <table align="center" border="1px">
+        <tr>
+            {% for k in search_result[0].keys() %}
+            <td>{{k}}</td>{% endfor %}
+        </tr>
+        {% for d in search_result %}
+        <tr>
+            {% for i in d.values() %}
+            <td>{{i}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+</div>
 {% endblock %}
