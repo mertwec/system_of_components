@@ -1,25 +1,21 @@
 {% extends "base.html"%}
+{% import 'macros.html' as macros %}
 
 {% block content %}
 
 {% include "create/universal_template/flush_message.html" %}
 
-Search:<p>{{type_table}}</p>
+<h4> Search: {{type_table}}</h4>
 <div>
 {% if search_result %}
-    <table align="center" border="1px">
-        <tr>
-            {% for k in search_result[0].keys() %}
-            <td>{{k}}</td>{% endfor %}
-        </tr>
-        {% for d in search_result %}
-        <tr>
-            {% for i in d.values() %}
-            <td>{{i}}</td>
-            {% endfor %}
-        </tr>
+    {% if type_table == 'Pattern' %}
+        {% for pat in search_result %}
+            <p>{{ pat.name }}</p>
+            {{ macros.show_comps_as_table(pat.component) }}
         {% endfor %}
-    </table>
+    {% else %}
+        {{ macros.show_comps_as_table(search_result) }}
+    {% endif %}
 {% endif %}
 </div>
 {% endblock %}

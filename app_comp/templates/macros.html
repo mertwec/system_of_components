@@ -1,0 +1,75 @@
+{% macro show_comps_as_table(components_object) %}
+
+{% if components_object %}
+
+    <table align="center" border="1px" width="900">
+    <tr>
+        {% for key in components_object[0].get_parameters_as_dict().keys() %}
+            <td>{{ key.title() }}</td>
+        {% endfor %}
+    </tr>
+    {% for c in components_object %}
+    <tr>
+    {% for item in c.get_parameters_as_dict().items() %}
+        {% if item[0]=='value' or item[0]=='name'%}
+            <td> 
+            <a href="{{url_for('change_component', id_component=c.id)}}">{{item[1]}}</a>
+            </td>
+        {% else %}
+            <td> {{item[1]}}</td>
+        {% endif %}
+    {% endfor %}
+    </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>Not exists</p>
+{% endif %}
+
+{% endmacro %}
+
+
+
+{% macro render_component(components) %}
+<table border="1" width="100%" cellspacing="2" cellpadding="3">
+    <tr>
+        <th>id</th><th>category</th> <th>component</th> <th>pattern</th> <th>count on pcb</th> <th>count on storage</th>
+    </tr>
+    {% for i in components %}
+    <tr>
+        <td>{{i['id_component']}}</td>
+        <td>{{i['category_name']}}</td>
+        <td>{{i['value']}} {{i['tolerance']}} {{ i['voltage']}} {{ i['power']}}</td>
+        <td>{{i['pattern_name']}}</td>
+        <td>{{i['count']}}</td>
+        <td>{{i['count_on_storage']}}
+    </tr>
+    {% endfor %}
+</table>
+{% endmacro %}
+
+
+{% macro show_comps_pcb_as_table(pcb_components) %}
+{# pcb_components is list of tuples: [(component, count on pcb)] #}
+<table border="1" width="100%" cellspacing="2" cellpadding="3">
+    <tr>
+        <th>id</th><th>category</th> <th>component</th> <th>pattern</th> <th>count on pcb</th> <th>count on storage</th>
+    </tr>
+    {% for i in pcb_components %}
+        {% if i[0]['count'] < i[1] %}
+            <tr class="color-text-red">
+        {% else %}
+            <tr class="color-text-green">
+        {% endif %}    
+            <td>{{i[0]['id']}}</td>
+            <td>{{i[0]['category_name']}}</td>
+            <td><a href="{{url_for('change_component', id_component=i[0]['id'])}}">
+            {{i[0]['value']}} {{i[0]['tolerance']}}% {{ i[0]['voltage'] }}V {{ i[0]['power']}}W</a></td>
+            <td>{{i[0]['pattern_name']}}</td>
+            <td>{{i[1]}}
+            <td>{{i[0]['count']}}</td>
+        </tr>    
+    {% endfor %}
+</table>
+{% endmacro %}
+

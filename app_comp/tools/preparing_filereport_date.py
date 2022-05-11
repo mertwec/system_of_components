@@ -29,12 +29,11 @@ def select_unique_component(read_object: bytes, pcb_name):
         list_read_object = read_object.split(b'\r\n')   # for win32
     elif system == 'linux' or system == 'darwin':
         list_read_object = read_object.split(b'\n')     # for linux
-    else:
-        pass
-    list_read_object = [field.decode('utf-8').split(';') for field in list_read_object]
-    column_name = list_read_object[0]
+
+    list_read_objects = [field.decode('utf-8').split(';') for field in list_read_object]
+    column_name = list_read_objects[0]
     pcb_values = dict()
-    for field in list_read_object[1:]:
+    for field in list_read_objects[1:]:
         # count(field[0]) not empty and value(field[-1]) != nm and not empty
         if field[0] and field[-1] and field[-1].lower() not in ('nm', 'not mount'):
             pcb_values[field[-1]] = {column_name[i]: field[i] for i in range(len(column_name) - 1)}

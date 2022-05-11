@@ -1,0 +1,10 @@
+<ul>
+    {% for pcb in all_pcb %}
+    {% set pcbv = pcb.name+'-'+pcb.version%}
+        <li>
+            <a href="{{ url_for('list_pcb', pcb_name=pcb.name, pcb_version=pcb.version) }}">
+                {{pcb.name}}-v{{pcb.version}}
+            </a>
+         </li>
+    {% endfor %}
+</ul>

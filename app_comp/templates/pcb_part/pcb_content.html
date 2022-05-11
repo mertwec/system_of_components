@@ -1,0 +1,40 @@
+{% import 'macros.html' as macros %}
+
+
+{% if pcb_obj %}
+    {% set pcbv = pcb_obj.name+'-'+pcb_obj.version%}
+<div align="left">
+    <p>Designation PCB: {{pcb_obj}}</p>
+    <p>Commentary: {{ pcb_obj.comment }}</p>
+    <p>Count collections: 1</p>
+</div> 
+<div align="left">   
+    <table cellspacing="5" cellpadding="3">
+        <tr>
+            <td valign="top">
+            <form method="post" action="{{url_for('list_pcb', pcb_name=pcb_obj.name, pcb_version=pcb_obj.version)}}">
+                <input type="hidden" name="rework" value="change">   
+                <input type="submit" value="change/delete pcb">
+            </form>
+            </td>        
+            
+            <td valign="top">   
+            <form method="post" action="{{url_for('list_pcb', pcb_name=pcb_obj.name, pcb_version=pcb_obj.version)}}">
+                <input type="hidden" name="rework" value="collect">  
+                <input type="submit" value="collect the pcb">
+            </form>
+            </td>
+        </tr>
+    </table>
+</div>
+{% endif %}
+
+{% if components_on_pcb %}    
+    <div>  
+    {{ macros.show_comps_pcb_as_table(components_on_pcb) }} 
+    </div>
+{% else %}
+<div align="center">
+    <img width="350px" src="../../static/images/AM_icon.jpg" alt="Adeptus Mechanicus are wait"></div>
+{% endif %}
+

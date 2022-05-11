@@ -1,0 +1,18 @@
+{% extends 'base.html'%}
+{% import 'macros.html' as macros %}
+
+
+{% block content %}
+<h3> {{title}} </h3>
+<table>
+    <tr>
+        <td valign="top" align="left">
+        {% include "pcb_part/pcb_menu.html" %}
+        </td>
+        
+        <td valign="top" align="center" width="900px">   
+        {% include "pcb_part/pcb_content.html" %}
+        </td>
+    </tr>
+</table>
+{% endblock %}

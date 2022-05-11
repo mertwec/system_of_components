@@ -23,16 +23,16 @@ class ComponentAddForm(FlaskForm):
 
     def validate_value(self, value):
         if self.unit.data != "None":
-            value = f"{value.data.upper()}{self.unit.data}"
+            value = f"{value.data}{self.unit.data}"
         else:
             value = value.data.upper()
-        print(value, float(self.tolerance.data), f':{type(self.tolerance.data)}')
         component = Component.query.filter_by(value=value,
                                               pattern_name=self.pattern.data,
                                               tolerance=float(self.tolerance.data)
                                               ).first()
         if component is not None:
-             raise ValidationError(f'Component {value} {self.pattern.data} {self.tolerance.data}% already exists')
+            message = f'Component {value} ({self.pattern.data}) {self.tolerance.data}% already exists'
+            raise ValidationError(message)
 
     def validate_unit(self, unit):
         """
@@ -41,7 +41,6 @@ class ComponentAddForm(FlaskForm):
         unit = unit.data
         category = self.category.data
         message = f'unit: {unit} and category:{category.title()} do not correspond!'
-
         check = {'R': 'resistor',
                  'F': 'capacitor',
                  'z': 'quartz',
@@ -84,7 +83,7 @@ class CategoryAddForm(FlaskForm):
 class PCBAddForm(FlaskForm):
     name = StringField("Name pcb:", validators=[DataRequired()])
     version = FloatField("Version (float):", default=1.0, validators=[DataRequired()])
-    count_boards = IntegerField("Count of board:", default=0)
+    count_boards = IntegerField("Count assemble:", default=0)
     comment = TextAreaField("Comment:")
     file_report = FileField("Report file csv:")     #, validators=[Regexp(regex=r'[\S]+\.csv$')])
     submit_create = SubmitField('Create PCB')
@@ -102,3 +101,17 @@ class SearchForm(FlaskForm):
                               validators=[DataRequired()],
                               default='Component')
     search = SubmitField('Search')
+
+
+class ChangeComponentForm(FlaskForm):
+    count = IntegerField("New Count:", default=-1)
+    comment = TextAreaField("New Commentary:", default=None)
+    submit_change = SubmitField('Change')
+    submit_delete = SubmitField('Delete')
+
+
+class CollectPCBForm(FlaskForm):
+    count = IntegerField("Count collected board:", default=1)
+    submit_check = SubmitField('Check components')
+    submit_collect = SubmitField('Collect board')
+    # submit_change = SubmitField('Change Commentary')

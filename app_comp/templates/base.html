@@ -20,14 +20,14 @@
     </header>
 
     <body>
-        <h2>Hello {{bd.user}}</h2>
+        <h2>Hello {{g.bd.user}}</h2>
         {% block content %}
         {% endblock %}
     </body>
 
     <footer>
         <hr>
-        <p>company: {{bd.company}}</p>
-        <div>our contacts: {{bd.contacts}}</div>
+        <p>company: {{g.bd.company}}</p>
+        <div>our contacts: {{g.bd.contacts}}</div>
 	</footer>
 </html>

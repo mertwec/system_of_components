@@ -1,26 +1,19 @@
+{% import 'macros.html' as macros %}
+
 <div>
 {% if components_of_category %}
-    <table align="center" border="1px">
-        <tr>
-        {% for key in components_of_category[0].get_parameters_as_dict().keys() %}
-            <td>{{ key.title() }}</td>
-        {% endfor %}
-        </tr>
+    {{ macros.show_comps_as_table(components_of_category) }}
 
-        {% for comp in components_of_category %}
-        <tr>
-            {% for value in comp.get_parameters_as_dict().values() %}
-            <td> {{value}}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
-    <div align="left">
-        {% for comp in components_of_category %}
-            <p>{{ comp.__str__() }}</p>
 
+  {{'-'*168}}
+
+    {#<div align="left">
+        {% for comp in components_of_category %}
+            <p>{{ comp }}</p>
         {% endfor %}
-    </div>
+    </div> #}
+ 
+
 {% else %}
     <img width="350px" src="../static/images/AM_icon.jpg" alt="Adeptus Mechanicus are wait">
 {% endif %}

@@ -1,6 +1,7 @@
 <nav>
     <a href="{{ url_for('index') }}">Home</a> /
     <a href="{{ url_for('categories', type_category='menu') }}">Categories</a> /
+    <a href="{{ url_for('list_pcb', pcb_name='pcb', pcb_version=1.0) }}">Project PCB</a> /
     <a href="{{ url_for('create_component') }}">Create component</a> /
     <a href="{{ url_for('create_pcb') }}">Create PCB</a>
 </nav>

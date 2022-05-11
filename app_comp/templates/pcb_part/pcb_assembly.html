@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% import "macros.html" as macros %}
+
+{% block content %}
+ 
+{% include "create/universal_template/flush_message.html"%}
+
+{% if parameters_pcb %}
+	<h3>{{parameters_pcb['name']}}</h3>
+	<p>Commentary: "{{parameters_pcb['comment']}}"</p>
+	<p>{% include "create/universal_template/flush_message.html"%}</p>
+    <form name={{title}} action ="" method="POST">
+        {{ form.hidden_tag() }}
+		{% if form.count.errors %}
+			<span class="error">{{ form.count.errors }}</span>
+		{% endif %} 
+        <p>{{ form.count.label() }} {{ form.count() }}</p>
+      
+        <p>Check collected board: {{ form.submit_check }}</p>
+        
+    
+    {% if f_components_pcb %}    
+        {% if f_components_pcb['component_delta'] %}
+        <div>
+            <p>components need to buy</p>
+    	   {{macros.show_comps_pcb_as_table(f_components_pcb['component_delta'])}}
+        </div>
+        <div>
+            <p>components not enough</p>
+        {{macros.show_comps_pcb_as_table(f_components_pcb['component_not_enough'])}}
+        </div>
+        {% endif %}
+
+        <div>
+            <p>components enough</p>
+            {{macros.show_comps_pcb_as_table(f_components_pcb['component_enough'])}}    
+        </div>
+        
+        {% if not f_components_pcb['component_delta'] %}
+            <p>Collect pcb: {{ form.submit_collect }}</p>
+        {% endif %}    	
+    {% endif %}
+
+    </form>
+{%else%}
+<p>That`s pcb not exist </p>
+    <figure class="centred" >
+        <img width="50%" src="../static/images/omnissiah.jpg" alt="Omnissiah">
+        <figcaption>Ommnissiah with Me!</figcaption>
+    </figure>
+{%endif%}
+
+{%endblock%}

@@ -1,7 +1,9 @@
 {% extends 'base.html'%}
 
+
 {% block content %}
-<h3> Categories of components </h3>
+<h3> {{title}}</h3>
+{% include "create/universal_template/flush_message.html"%}
 <table>
     <tr>
     <td valign="top" align="left">{% include "categories_part/category_menu.html" %}</td>

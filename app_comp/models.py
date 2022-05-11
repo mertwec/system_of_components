@@ -1,11 +1,11 @@
 from app_comp import db
 from app_comp.tools.quotes import random_quote
-
+# from app_comp.tools import database_tools as dbt
 
 temp_bd = {'company': "Adeptus Mechanicus",
            'user': "Master Inquisitor",
            'contacts': "Mars. Valleys of the Mariner. F.'DevMechanic', s.42 r.3",
-           'quote': random_quote(),     # type of "quote:list"=[quote:str, author:str]
+           # 'quote': random_quote(),     # type of "quote:list"=[quote:str, author:str]
            }
 
 
@@ -19,7 +19,7 @@ class Category(db.Model):
                                  cascade='all, delete',)
 
     def __str__(self):
-        return f'{self.id}: {self.refdes} - {self.name} '
+        return f'{self.id}: {self.refdes} - {self.name}'
 
 
 class Pattern(db.Model):
@@ -58,11 +58,12 @@ class Component(db.Model):
     comment = db.Column(db.Text)
     category_name = db.Column(db.String(128), db.ForeignKey("categories.name"))
     pattern_name = db.Column(db.String(128), db.ForeignKey("patterns.name"))
+
     pcboards = db.relationship("AssociatedCompPcb",
                                back_populates='component')
 
     def __str__(self):
-        return f'id_{self.id}: {self.value} pattern:{self.pattern_name}; count={self.count} '
+        return f'Component: {self.value} tol: {self.tolerance}%\nPattern: {self.pattern_name}\nCount: {self.count}'
 
     def get_parameters_as_dict(self) -> dict:
         return {"category": self.category_name,
@@ -77,11 +78,12 @@ class Component(db.Model):
 
 
 class PCBoard(db.Model):
+    """Project for assembling printed circuit boards"""
     __tablename__ = 'PCB'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False)
-    version = db.Column(db.Float, default=1.0)
-    count_boards = db.Column(db.Integer, default=0)
+    version = db.Column(db.Float, default=0.0)
+    count_boards = db.Column(db.Integer, default=1)
     comment = db.Column(db.Text)
 
     components = db.relationship("AssociatedCompPcb",
@@ -89,10 +91,12 @@ class PCBoard(db.Model):
                                  cascade='all, delete')
 
     def __str__(self):
-        return f"{self.name}-v{self.version} (count = {self.count_boards})"
+        return f"{self.name}-v{self.version} (count: {self.count_boards})"
 
-    def get_pcb_as_dict(self):
+    def get_parameters_as_dict(self):
+        _components = [(c.component, c.comp_count) for c in self.components]
         return {'name': f'{self.name}-v{self.version}',
-                'count board': self.count_boards,
                 'comment': self.comment,
+                'count_collect': self.count_boards,
+                'components': _components,
                 }

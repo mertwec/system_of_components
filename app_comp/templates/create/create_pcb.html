@@ -1,25 +1,10 @@
 {% extends "base.html"%}
 
-{% macro render_component(components) %}
-<table border="1" width="100%" cellspacing="2" cellpadding="3">
-    <tr>
-        <th>category</th> <th>component</th> <th>pattern</th> <th>count</th> <th>id in db</th>
-    </tr>
-
-    {% for i in components %}<tr>
-        <td>{{i['category_name']}}</td>
-        <td>{{i['value']}} {{i['tolerance']}} {{ i['voltage']}} {{ i['power']}}</td>
-        <td>{{i['pattern_name']}}</td>
-        <td>{{i['count']}}</td>
-        <td>{{i['id_component']}}</td></tr>
-    {% endfor %}
-
-</table>
-{% endmacro %}
+{% from "macros.html" import render_component%}
 
 
 {% block content %}
-    <h3>Create Board</h3>
+    <h3>Create assemble of Board</h3>
 <form name={{title}}  method="POST" enctype="multipart/form-data">
 <table>
     <tr>
@@ -57,7 +42,6 @@
             {% endif %}
         </td>
     </tr>
-
 </table>
 </form>
 {% endblock %}

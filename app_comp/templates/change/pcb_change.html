@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+{% if component %}
+    <h4>{{component.__str__()}}</h4>
+
+    <p>{% include "create/universal_template/flush_message.html"%}</p>
+    <form name={{title}} action ="" method="POST">
+        {{ form.hidden_tag() }}
+    <table border="1px" >
+
+        <tr>
+            <td>Count assemble board: {{component.count_boards}}</td>
+            <td align="right">{{form.count.label}} {{form.count}}</td>        
+
+            {% if form.count.errors %}
+                <td><span class="error">{{ form.count.errors }}</span></td>
+            {% endif %}        
+        </tr>
+
+        <tr>
+            <td>Commentary: {{ component.comment }}</td>
+            <td align="right">{{ form.comment.label }} {{ form.comment }}</td>
+            
+            {% if form.comment.errors %}
+                <td><span class="error">{{ form.comment.errors }}</span></td>
+            {% endif %}        
+        </tr>
+
+    </table>
+        <p>Change component: {{ form.submit_change }}</p>
+        <p>Delete component: {{ form.submit_delete }}</p>
+    </form>
+
+{%else%}
+<p>That`s pcb not exist </p>
+    <figure class="centred" >
+        <img width="50%" src="../static/images/omnissiah.jpg" alt="Omnissiah">
+        <figcaption>Ommnissiah with Me!</figcaption>
+    </figure>
+{%endif%}
+{% endblock %}

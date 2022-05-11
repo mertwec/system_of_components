@@ -1,4 +1,4 @@
-from app_comp.models import Category, Pattern, Component, PCBoard
+from app_comp.models import Category, Pattern, Component, PCBoard, AssociatedCompPcb
 from app_comp import db
 
 
@@ -8,6 +8,9 @@ unit_list = [None, "R", "kR", "MR", "pF", "mkF", 'mkH', 'kHz', "MHz"]
 class CRUDTable:
     def __init__(self):
         self.db = db
+
+    def read_element_on_id(self, table, id_elem):
+        return self.db.session.query(table).get(id_elem)
 
     def read_table_all(self, table: object):  # Category or Category.name
         """read all information from the table
@@ -33,18 +36,22 @@ class CRUDTable:
 
     def write_n_column_to_table(self, columns: list):
         """ :param columns: list of new objects for writing in table
-        example: columns = [Column(arg1=arg1, arg2=arg2, ... argN=argN),
+        :example: columns = [Column(arg1=arg1, arg2=arg2, ... argN=argN),
                             Column(arg1=arg1,.....), ... ]
         """
         self.db.session.add_all(columns)
         self.db.session.commit()
 
+    def write_commit(self):
+        self.db.session.commit()
+
     def read_table_filter_first(self, table, filter_param: tuple) -> list:
-        """
-        :param table: name of table: Component, PCBoard, etc/
+        """:param table: name of table: Component, PCBoard, etc/
         :param filter_param: tuple of filters: (Component.name=='name', table.id=n, ets)
         :return: result search: [], if nothing
         """
+        if isinstance(table, (tuple, list)):
+            return self.db.session.query(*table).filter(*filter_param).first()
         return self.db.session.query(table).filter(*filter_param).first()
 
     def read_table_filter(self, table, filter_param: tuple) -> list:
@@ -125,9 +132,11 @@ def search_component_in_db(component_param: dict) -> dict:
                 'comment': out_value['comment'],
                 'count': define_count(params_comp_pcb['Count']),  # count component 'value' in pcb
                 'pattern_name': define_pattern(params_comp_pcb['PatternName'], category),
-                'category_name': category}
+                'category_name': category,
                 +
-                'id_component':((first id in db,))
+                'id_component':((first id in db,)) or None
+                'count_on_storage': count components in storage or None
+                }
     """
     cp = component_param
     if cp['category_name'] == 'resistor':
@@ -137,11 +146,14 @@ def search_component_in_db(component_param: dict) -> dict:
     else:
         _filter = (Component.value == cp['value'],
                    Component.pattern_name == cp['pattern_name'])
-    id_component = crud.read_table_filter_first(Component.id, _filter)  # (id,)
+    id_component = crud.read_table_filter_first((Component.id, Component.count), _filter)  # (id,)
+
     if id_component:
-        cp['id_component'] = id_component[0]    # id or None
+        cp['id_component'] = id_component[0]    # id = (id,)
+        cp['count_on_storage'] = id_component[1]
     else:
-        cp['id_component'] = id_component
+        cp['id_component'] = id_component       # None
+        cp['count_on_storage'] = id_component   # None
     return cp
 
 
@@ -165,21 +177,21 @@ def search_text(type_table: str, text_search: str) -> list:
     return list """
     text = f'%{text_search}%'
     if type_table == 'Pattern':
-        result = db.session.query(Pattern).filter(Pattern.name.like(text)).all()
-        list_comp = [p.get_components_from_pattern() for p in result]
-        res_comp = list()
-        for i in list_comp:
-            for j in i:
-                res_comp.append(j)
-        return res_comp
+        patterns = db.session.query(Pattern).filter(Pattern.name.like(text)).all()
+        return patterns
     elif type_table == 'Component':
-        result = db.session.query(Component).filter(Component.value.like(text)).all()
-        if result:
-            return [r.get_parameters_as_dict() for r in result]
-        else:
-            return list()
+        return db.session.query(Component).filter(Component.value.like(text)).all()
     elif type_table == 'PCBoard':
-        result = db.session.query(PCBoard).filter(PCBoard.name.like(text)).all()
-        return [i.get_pcb_as_dict() for i in result]
-    else:
-        return list()
+        return db.session.query(PCBoard).filter(PCBoard.name.like(text)).all()
+
+
+def check_count_component_from_pcb(pcb_components: list, N: int):
+    """pcb_components: [(<Component>, k), (<Compnent>, k)...etc] where k= count components on pcb
+    N: number pcb for collect
+    """
+    list_true = [(c[0], c[1]*N) for c in pcb_components if c[0].count > c[1]*N]
+    list_false = [(c[0], c[1]*N) for c in pcb_components if c[0].count < c[1]*N]
+    list_delta = [(c[0], c[1]*N - c[0].count) for c in pcb_components if c[0].count < c[1]*N]
+    return {'component_enough': list_true,
+            'component_not_enough': list_false,
+            'component_delta': list_delta}
