@@ -1,5 +1,6 @@
 from app_comp.models import Category, Pattern, Component, PCBoard, AssociatedCompPcb
 from app_comp import db
+from sqlalchemy.exc import ProgrammingError
 
 
 unit_list = [None, "R", "kR", "MR", "pF", "mkF", 'mkH', 'kHz', "MHz"]
@@ -16,7 +17,10 @@ class CRUDTable:
         """read all information from the table
         :type
         """
-        return self.db.session.query(table).all()
+        try:
+            return self.db.session.query(table).all()
+        except ProgrammingError:
+            return list()
 
     def read_table_first(self, table: object):  # Category or Category.name
         """read all information from the table

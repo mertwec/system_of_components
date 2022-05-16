@@ -1,5 +1,5 @@
 from flask import Flask
-from config import Config
+from config import Config, ConfigTest
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
@@ -9,6 +9,7 @@ abs_path = os.path.abspath(rf".{sep}")   # D:\PyProgect\system_of_components
 path_to_json = abs_path + rf"{sep}app_comp{sep}static{sep}quotes.json"
 
 app = Flask(__name__)
+# app.config.from_object(ConfigTest)    # sqlite
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

@@ -85,13 +85,12 @@ class PCBoard(db.Model):
     version = db.Column(db.Float, default=0.0)
     count_boards = db.Column(db.Integer, default=1)
     comment = db.Column(db.Text)
-
     components = db.relationship("AssociatedCompPcb",
                                  back_populates='pcb',
                                  cascade='all, delete')
 
     def __str__(self):
-        return f"{self.name}-v{self.version} (count: {self.count_boards})"
+        return f"{self.name}-v{self.version}."
 
     def get_parameters_as_dict(self):
         _components = [(c.component, c.comp_count) for c in self.components]

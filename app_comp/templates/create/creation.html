@@ -24,8 +24,7 @@
         </td>
     </tr>
 </table>
-{% if title == "Component" %}
     <p>If category is not exist: <a href="{{ url_for('create_category') }}"> add Category </a> </p>
     <p>If pattern is not exist: <a href="{{ url_for('create_pattern') }}"> add Pattern </a> </p>
-{% endif %}
+
 {% endblock %}
