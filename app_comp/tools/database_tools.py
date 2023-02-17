@@ -7,8 +7,8 @@ unit_list = [None, "R", "kR", "MR", "pF", "mkF", 'mkH', 'kHz', "MHz"]
 
 
 class CRUDTable:
-    def __init__(self):
-        self.db = db
+    def __init__(self, database=db):
+        self.db = database
 
     def read_element_on_id(self, table, id_elem):
         return self.db.session.query(table).get(id_elem)
